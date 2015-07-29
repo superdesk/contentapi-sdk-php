@@ -1,0 +1,26 @@
+{
+    "name": "superdesk/contentapi-sdk-php",
+    "description": "Superdesk Content API SDK written in PHP",
+    "license":"GPL-3.0",
+    "authors": [
+        {
+            "name": "Mischa Gorinskat",
+            "email": "mischa.gorinskat@sourcefabric.org"
+        }
+    ],
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.5",
+        "guzzlehttp/guzzle": "6.0.*"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "~2.0"
+    },
+    "scripts": {
+    }
+}

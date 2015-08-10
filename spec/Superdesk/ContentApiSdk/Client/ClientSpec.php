@@ -3,7 +3,6 @@
 namespace spec\Superdesk\ContentApiSdk\Client;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class ClientSpec extends ObjectBehavior
 {

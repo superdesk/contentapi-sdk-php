@@ -16,6 +16,7 @@ namespace Superdesk\ContentApiSdk\Client;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Psr7\Response;
 use Superdesk\ContentApiSdk\Exception\ContentApiException;
 
 /**
@@ -51,8 +52,12 @@ class Client extends GuzzleClient implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function makeApiCall($endpoint, $queryParameters = null, $options = null)
-    {
+    public function makeApiCall(
+        $endpoint,
+        $queryParameters = null,
+        $options = null,
+        $returnFullResponse = false
+    ) {
         try {
             $response = $this->get(
                 $this->buildUrl($endpoint, $this->processParameters($queryParameters)),
@@ -62,7 +67,13 @@ class Client extends GuzzleClient implements ClientInterface
             throw new ContentApiException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return (string) $response->getBody();
+        if ($returnFullResponse) {
+            $return = $this->decodeResponse($response);
+        } else {
+            $return = (string) $response->getBody();
+        }
+
+        return $return;
     }
 
     /**
@@ -135,5 +146,24 @@ class Client extends GuzzleClient implements ClientInterface
         }
 
         return $options;
+    }
+
+    /**
+     * Decodes a GuzzleHTTP response into a standard formatted array. (See
+     * ClientInterface for documentation).
+     *
+     * @param  Response $response Guzzle response
+     *
+     * @return array              Response as array
+     */
+    private function decodeResponse(Response $response)
+    {
+        return array(
+            'headers' => $response->getHeaders(),
+            'status' => $response->getStatusCode(),
+            'reason' => $response->getReasonPhrase(),
+            'version' => $response->getProtocolVersion(),
+            'body' => (string) $response->getBody(),
+        );
     }
 }

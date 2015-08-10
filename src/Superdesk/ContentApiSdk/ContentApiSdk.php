@@ -70,16 +70,22 @@ class ContentApiSdk
      */
     public function getItems($params)
     {
+        $return = null;
         $body = $this->client->makeApiCall(self::SUPERDESK_ENDPOINT_ITEMS, $params);
 
         // TODO: Built in data-type check
         $bodyJSONObj = json_decode($body);
 
-        foreach ($bodyJSONObj->_items as $key => $item) {
-            $bodyJSONObj->_items[$key] = new Item($item);
+
+        if (count($bodyJSONObj->_items) > 0) {
+            foreach ($bodyJSONObj->_items as $key => $item) {
+                $bodyJSONObj->_items[$key] = new Item($item);
+            }
+
+            $return = $bodyJSONObj->_items;
         }
 
-        return $bodyJSONObj->_items;
+        return $return;
     }
 
     /**
@@ -123,15 +129,17 @@ class ContentApiSdk
         // TODO: Built in data-type check
         $bodyJSONObj = json_decode($body);
 
-        foreach ($bodyJSONObj->_items as $key => $item) {
-            $bodyJSONObj->_items[$key] = new Package($item);
-        }
-        $packages = $bodyJSONObj->_items;
+        if (count($bodyJSONObj->_items) > 0) {
+            foreach ($bodyJSONObj->_items as $key => $item) {
+                $bodyJSONObj->_items[$key] = new Package($item);
+            }
+            $packages = $bodyJSONObj->_items;
 
-        if ($resolveItems) {
-            foreach ($packages as $id => $package) {
-                $associations = $this->getAssociationsFromPackage($package);
-                $packages[$id] = $this->injectAssociations($package, $associations);
+            if ($resolveItems) {
+                foreach ($packages as $id => $package) {
+                    $associations = $this->getAssociationsFromPackage($package);
+                    $packages[$id] = $this->injectAssociations($package, $associations);
+                }
             }
         }
 

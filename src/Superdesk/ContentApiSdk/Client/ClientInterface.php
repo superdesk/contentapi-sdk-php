@@ -20,13 +20,20 @@ namespace Superdesk\ContentApiSdk\Client;
 interface ClientInterface
 {
     /**
-     * Make a call to the public api.
+     * Make a call to the public api and return response, either as string or
+     * as standard formatted array.
      *
-     * @param string     $endpoint        Url path of the public api
-     * @param array|null $queryParameters List of query parameters
-     * @param array|null $options         List of options to send to the http client
+     * @param string     $endpoint           Url path of the public api
+     * @param array|null $queryParameters    List of query parameters
+     * @param array|null $options            List of options to send to the http client
+     * @param boolean    $returnFullResponse Return full reponse as array
      *
-     * @return string Returns response body
+     * @return string Returns response body or reponse as array
      */
-    public function makeApiCall($endpoint, $queryParameters = null, $options = null);
+    public function makeApiCall(
+        $endpoint,
+        $queryParameters = null,
+        $options = null,
+        $returnFullResponse = false
+    );
 }

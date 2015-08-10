@@ -15,6 +15,7 @@
 namespace Superdesk\ContentApiSdk\Data;
 
 use stdClass;
+use Superdesk\ContentApiSdk\ContentApiSdk;
 
 // TODO: Replace by entities (most likely)
 /**
@@ -30,6 +31,8 @@ abstract class AbstractDataObject extends stdClass
      */
     public function __construct($data = null)
     {
+        $objectData = array();
+
         if (is_string($data)) {
             $objectData = json_decode($data);
         } elseif (is_array($data) || is_object($data)) {
@@ -56,6 +59,17 @@ abstract class AbstractDataObject extends stdClass
     }
 
     /**
+     * Set property on object
+     *
+     * @param string $name  Property name
+     * @param mixed $value Property value
+     */
+    public function __set($name, $value)
+    {
+        $this->$name = $value;
+    }
+
+    /**
      * Returns id extracted from uri
      *
      * @return string Urldecoded id
@@ -69,7 +83,7 @@ abstract class AbstractDataObject extends stdClass
          */
 
         $uriPath = parse_url($this->uri, PHP_URL_PATH);
-        $objectId = str_replace($this->getAvailableEndpoints(), '', $uriPath);
+        $objectId = str_replace(ContentApiSdk::getAvailableEndpoints(), '', $uriPath);
         // Remove possible slashes and spaces, since we're working with urls
         $objectId = trim($objectId, '/ ');
         $objectId = urldecode($objectId);

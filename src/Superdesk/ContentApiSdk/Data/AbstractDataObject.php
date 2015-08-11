@@ -70,24 +70,13 @@ abstract class AbstractDataObject extends stdClass
     }
 
     /**
-     * Returns id extracted from uri
+     * Returns id extracted from uri. Uses getIdFromUri method in ContentApiSdk
+     * class.
      *
      * @return string Urldecoded id
      */
     public function getId()
     {
-        /*
-         * Works for package and item uris
-         *   http://publicapi:5050/packages/tag%3Ademodata.org%2C0012%3Aninjs_XYZ123
-         *   http://publicapi:5050/items/tag%3Ademodata.org%2C0003%3Aninjs_XYZ123
-         */
-
-        $uriPath = parse_url($this->uri, PHP_URL_PATH);
-        $objectId = str_replace(ContentApiSdk::getAvailableEndpoints(), '', $uriPath);
-        // Remove possible slashes and spaces, since we're working with urls
-        $objectId = trim($objectId, '/ ');
-        $objectId = urldecode($objectId);
-
-        return $objectId;
+        return ContentApiSdk::getIdFromUri($this->uri);
     }
 }

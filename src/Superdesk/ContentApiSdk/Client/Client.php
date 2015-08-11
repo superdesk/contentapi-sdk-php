@@ -17,6 +17,7 @@ namespace Superdesk\ContentApiSdk\Client;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 use Superdesk\ContentApiSdk\Exception\ContentApiException;
 
 /**
@@ -109,15 +110,18 @@ class Client extends GuzzleClient implements ClientInterface
     /**
      * Process request parameters.
      *
-     * @param array $params
+     * @param mixed $params
      *
      * @return array
      */
     private function processParameters($params)
     {
-        // TODO: Check if we need something useful here
-        // Filter invalid params
-        // Convert datatypes
+        if (is_null($params)) {
+            return $params;
+        }
+
+        // TODO: Filter invalid params
+        // TODO: Convert datatypes
 
         return $params;
     }
@@ -127,9 +131,9 @@ class Client extends GuzzleClient implements ClientInterface
      * options from the first argument. Via the options key it's possible to
      * override options globally via .yml file.
      *
-     * @param array|null $options Guzzle request headers / options
+     * @param  array|null $options Guzzle request headers / options
      *
-     * @return array()
+     * @return array
      */
     private function processOptions($options)
     {
@@ -149,14 +153,14 @@ class Client extends GuzzleClient implements ClientInterface
     }
 
     /**
-     * Decodes a GuzzleHTTP response into a standard formatted array. (See
+     * Decodes a response into a standard formatted array. (See
      * ClientInterface for documentation).
      *
-     * @param  Response $response Guzzle response
+     * @param  ResponseInterface $response Guzzle response
      *
-     * @return array              Response as array
+     * @return array                       Response as array
      */
-    private function decodeResponse(Response $response)
+    private function decodeResponse(ResponseInterface $response)
     {
         return array(
             'headers' => $response->getHeaders(),

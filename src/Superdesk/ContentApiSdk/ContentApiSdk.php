@@ -17,6 +17,7 @@ namespace Superdesk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Data\Package;
+use stdClass;
 
 /**
  * Superdesk ContentApi class.
@@ -29,7 +30,7 @@ class ContentApiSdk
     /**
      * Internal request service.
      *
-     * @var SuperdeskBridgeRequestService
+     * @var ClientInterface
      */
     protected $client;
 
@@ -48,11 +49,10 @@ class ContentApiSdk
      *
      * @param string $itemId Identifier for item
      *
-     * @return mixed
+     * @return Item
      */
     public function getItem($itemId)
     {
-        $item = null;
         $body = $this->client->makeApiCall(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_ITEMS, $itemId));
 
         // TODO: Built in data-type check
@@ -95,11 +95,10 @@ class ContentApiSdk
      * @param bool   $resolveItems Inject full associations instead of references
      *                             by uri.
      *
-     * @return stdClass
+     * @return Package
      */
     public function getPackage($packageId, $resolveItems = false)
     {
-        $package = null;
         $body = $this->client->makeApiCall(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_PACKAGES, $packageId));
 
         // TODO: Built in data-type check
@@ -149,9 +148,9 @@ class ContentApiSdk
     /**
      * Gets full objects for all associations for a package.
      *
-     * @param stdClass $packages A package
+     * @param  Package $package  A package
      *
-     * @return stdClass List of associations
+     * @return stdClass          List of associations
      */
     private function getAssociationsFromPackage($package)
     {
@@ -176,38 +175,13 @@ class ContentApiSdk
     }
 
     /**
-     * Tries to find a valid id in an uri, both item as package uris. The id
-     * is returned urldecoded.
-     *
-     * @param string $uri Item or package uri
-     *
-     * @return string Urldecoded id
-     */
-    public function getIdFromUri($uri)
-    {
-        /*
-         * Works for package and item uris
-         *   http://publicapi:5050/packages/tag%3Ademodata.org%2C0012%3Aninjs_XYZ123
-         *   http://publicapi:5050/items/tag%3Ademodata.org%2C0003%3Aninjs_XYZ123
-         */
-
-        $uriPath = parse_url($uri, PHP_URL_PATH);
-        $objectId = str_replace($this->getAvailableEndpoints(), '', $uriPath);
-        // Remove possible slashes and spaces, since we're working with urls
-        $objectId = trim($objectId, '/ ');
-        $objectId = urldecode($objectId);
-
-        return $objectId;
-    }
-
-    /**
      * Overwrite the associations links in a packages with the actual association
      * data.
      *
-     * @param stdClass $package      Package
-     * @param stdClass $associations Multiple items or packages
+     * @param  Package  $package      Package
+     * @param  stdClass $associations Multiple items or packages
      *
-     * @return stdClass Package with data injected
+     * @return Package                Package with data injected
      */
     private function injectAssociations($package, $associations)
     {
@@ -216,6 +190,31 @@ class ContentApiSdk
         }
 
         return $package;
+    }
+
+    /**
+     * Tries to find a valid id in an uri, both item as package uris. The id
+     * is returned urldecoded.
+     *
+     * @param  string $uri Item or package uri
+     *
+     * @return string      Urldecoded id
+     */
+    public static function getIdFromUri($uri)
+    {
+        /*
+         * Works for package and item uris
+         *   http://publicapi:5050/packages/tag%3Ademodata.org%2C0012%3Aninjs_XYZ123
+         *   http://publicapi:5050/items/tag%3Ademodata.org%2C0003%3Aninjs_XYZ123
+         */
+
+        $uriPath = parse_url($uri, PHP_URL_PATH);
+        $objectId = str_replace(ContentApiSdk::getAvailableEndpoints(), '', $uriPath);
+        // Remove possible slashes and spaces, since we're working with urls
+        $objectId = trim($objectId, '/ ');
+        $objectId = urldecode($objectId);
+
+        return $objectId;
     }
 
     /**

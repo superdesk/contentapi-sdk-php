@@ -1,0 +1,21 @@
+language: php
+
+matrix:
+    include:
+     - php: 5.5
+     - php: 5.6
+     - php: nightly
+     - php: hvvm
+    allow_failures:
+     - php: nightly
+     - php: hvvm
+    fast_finish: true
+
+notifications:
+  email: false
+
+before_script:
+ - composer install --prefer-dist
+
+script:
+ - vendor/bin/phpspec run --format pretty

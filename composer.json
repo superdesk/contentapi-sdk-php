@@ -15,8 +15,7 @@
         }
     },
     "require": {
-        "php": ">=5.5",
-        "guzzlehttp/guzzle": "6.0.*"
+        "php": ">=5.3"
     },
     "require-dev": {
         "phpspec/phpspec": "~2.0"

@@ -16,11 +16,11 @@ namespace spec\Superdesk\ContentApiSdk\Client;
 
 use PhpSpec\ObjectBehavior;
 
-class ClientSpec extends ObjectBehavior
+class DefaultClientSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\Client\Client');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Client\DefaultClient');
         $this->shouldImplement('Superdesk\ContentApiSdk\Client\ClientInterface');
     }
 
@@ -48,33 +48,20 @@ class ClientSpec extends ObjectBehavior
         $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringMakeApiCall('', null, null);
     }
 
-    function it_should_be_able_to_return_json()
+    function it_should_be_able_to_return_a_response()
     {
         $config = array(
             'base_uri' => 'http://httpbin.org',
             'options' => array(
-                'Content-Type' => 'application/json'
+                'http' => array(
+                    'header' => array(
+                        "Accept: application/json\r\n"
+                    )
+                )
             )
         );
         $this->beConstructedWith($config);
         $response = $this->makeApiCall('/headers', null, null, true);
-        $response['headers']->shouldHaveKey('Content-Type');
-        $response['headers']['Content-Type']->shouldContain('application/json');
-        $response['body']->shouldBeString();
-    }
-
-    function it_should_be_able_to_return_xml()
-    {
-        $config = array(
-            'base_uri' => 'http://httpbin.org',
-            'options' => array(
-                'Content-Type' => 'application/xml'
-            )
-        );
-        $this->beConstructedWith($config);
-        $response = $this->makeApiCall('/xml', null, null, true);
-        $response['headers']->shouldHaveKey('Content-Type');
-        $response['headers']['Content-Type']->shouldContain('application/xml');
         $response['body']->shouldBeString();
     }
 }

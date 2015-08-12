@@ -14,7 +14,7 @@
 
 namespace Superdesk\ContentApiSdk\Client;
 
-use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -24,7 +24,7 @@ use Superdesk\ContentApiSdk\Exception\ContentApiException;
  * Request service that implements all method regarding basic request/response
  * handling.
  */
-class Client extends GuzzleClient implements ClientInterface
+class GuzzleClient extends BaseClient implements ClientInterface
 {
     /**
      * Default values based on Superdesk.
@@ -41,7 +41,7 @@ class Client extends GuzzleClient implements ClientInterface
      * @var array
      */
     protected $options = array(
-        'Content-Type' => 'application/json',
+        'Accept' => 'application/json',
     );
 
     public function __construct(array $config = array())

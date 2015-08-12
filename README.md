@@ -30,14 +30,14 @@ Get all items, filtering by date from the 1st of January 2015.
 
 ```php
     use Superdesk\ContentApiSdk\ContentApiSdk;
-    use Superdesk\ContentApiSdk\Client\Client;
+    use Superdesk\ContentApiSdk\Client\DefaultClient;
 
     $clientConfig = array(
         'base_uri' => 'http://publicapi.example.com:5050'
     );
     $parameters = array('start_date' => '2015-01-01');
 
-    $contentApi = new ContentApiSdk(new Client($clientConfig));
+    $contentApi = new ContentApiSdk(new DefaultClient($clientConfig));
     $items = $contentApi->getItems($parameters);
 ```
 
@@ -47,13 +47,13 @@ Get packages and resolve package contents, filtering packages by date from the 1
 
 ```php
     use Superdesk\ContentApiSdk\ContentApiSdk;
-    use Superdesk\ContentApiSdk\Client\Client;
+    use Superdesk\ContentApiSdk\Client\DefaultClient;
 
     $clientConfig = array(
         'base_uri' => 'http://publicapi.example.com:5050'
     );
     $parameters = array('start_date' => '2015-01-01');
 
-    $contentApi = new ContentApiSdk(new Client($clientConfig));
+    $contentApi = new ContentApiSdk(new DefaultClient($clientConfig));
     $packages = $contentApi->getPackages($parameters, true);
 ```

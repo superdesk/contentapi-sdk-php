@@ -16,7 +16,7 @@ namespace spec\Superdesk\ContentApiSdk;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\Client\Client;
+use Superdesk\ContentApiSdk\Client\DefaultClient;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 
 class ContentApiSdkSpec extends ObjectBehavior
@@ -26,17 +26,25 @@ class ContentApiSdkSpec extends ObjectBehavior
         $this->shouldHaveType('Superdesk\ContentApiSdk\ContentApiSdk');
     }
 
-    function let(Client $client)
+    function let(DefaultClient $client)
     {
-        $client->beADoubleOf('Superdesk\ContentApiSdk\Client\Client');
+        $client->beADoubleOf('Superdesk\ContentApiSdk\Client\DefaultClient');
         $this->beConstructedWith($client);
     }
 
     function its_method_get_item_should_return_an_item($client)
     {
         $client->makeApiCall(Argument::Any(), null, null)->willReturn('{ "version": "v3", "renditions": { "main": { "height": 720, "title": "Cat Full Resolution", "href": "http:/pictures.com/photos/cat-big.jpg", "width": 1050, "mimetype": "image/jpg" }, "small": { "height": 180, "title": "Cat Low Resolution", "href": "http:/pictures.com/photos/cat-small.jpg", "width": 262, "mimetype": "image/jpg" } }, "pubstatus": "usable", "urgency": 9, "type": "picture", "located": "Some backyard in one of the many Berlin houses", "description_html": "<p>This is a <em>cute</em> picture of our cat.</p>", "_links": { "parent": { "title": "home", "href": "/" }, "collection": { "title": "items", "href": "items" }, "self": { "title": "Item", "href": "items/tag:demodata.org,0001:ninjs_XYZ123" } }, "description_text": "This is a cute picture of our cat.", "uri": "http://publicapi:5050/items/tag%3Ademodata.org%2C0001%3Aninjs_XYZ123", "place": [ { "name": "my neighbour\'s backyard" }, { "name": "Berlin" }, { "name": "Germany" } ], "headline": "Amazing! A very cute fluffy cat!", "versioncreated": "2015-03-16T08:12:00+0000", "byline": "Andy Catlover", "usageterms": "You can use this photo in any way you want." }');
-
         $this->getItem(Argument::any())->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\Data\Item');
+    }
+
+    function its_method_get_item_should_return_an_exception_on_invalid_data($client)
+    {
+        $client->makeApiCall(Argument::Any(), null, null)->willReturn(null);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetItem(Argument::any());
+
+        $client->makeApiCall(Argument::Any(), null, null)->willReturn('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><error>Invalid response</error>');
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetItem(Argument::any());
     }
 
     function its_method_get_items_should_return_null_for_no_items($client)
@@ -57,6 +65,20 @@ class ContentApiSdkSpec extends ObjectBehavior
         foreach ($array as $item) {
             $item->shouldHaveType('Superdesk\ContentApiSdk\Data\Item');
         }
+    }
+
+    function its_method_get_items_should_return_an_exception_for_invalid_data($client)
+    {
+        $parameters = array('start_date' => '1970-01-01');
+
+        $client->makeApiCall('/items', $parameters, null)->willReturn(null);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetItems($parameters);
+
+        $client->makeApiCall('/items', $parameters, null)->willReturn('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><error>Invalid response</error>');
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetItems($parameters);
+
+        $client->makeApiCall('/items', $parameters, null)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "items", "href": "items?start_date=2015-08-01" } }, "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetItems($parameters);
     }
 
     function its_method_get_package_should_return_a_package($client)

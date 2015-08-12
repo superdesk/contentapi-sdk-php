@@ -17,6 +17,7 @@ namespace Superdesk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Data\Package;
+use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 use stdClass;
 
 /**
@@ -28,7 +29,7 @@ class ContentApiSdk
     const SUPERDESK_ENDPOINT_PACKAGES = '/packages';
 
     /**
-     * Internal request service.
+     * Any (http) client that implements ClientInterface.
      *
      * @var ClientInterface
      */
@@ -47,7 +48,7 @@ class ContentApiSdk
     /**
      * Get a single item via id.
      *
-     * @param string $itemId Identifier for item
+     * @param  string $itemId Identifier for item
      *
      * @return Item
      */
@@ -55,8 +56,12 @@ class ContentApiSdk
     {
         $body = $this->client->makeApiCall(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_ITEMS, $itemId));
 
-        // TODO: Built in data-type check
-        $item = new Item(json_decode($body));
+        $jsonData = json_decode($body);
+        if (is_null($jsonData) || json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidDataException('Returned data is not in (valid) json format.', json_last_error());
+        }
+
+        $item = new Item($jsonData);
 
         return $item;
     }
@@ -64,7 +69,7 @@ class ContentApiSdk
     /**
      * Get multiple items based on a filter.
      *
-     * @param array $params Filter parameters
+     * @param  array $params Filter parameters
      *
      * @return mixed
      */
@@ -73,9 +78,12 @@ class ContentApiSdk
         $return = null;
         $body = $this->client->makeApiCall(self::SUPERDESK_ENDPOINT_ITEMS, $params);
 
-        // TODO: Built in data-type check
         $bodyJSONObj = json_decode($body);
-
+        if (is_null($bodyJSONObj) || json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidDataException('Response could not be converted into object.', json_last_error());
+        } elseif (!property_exists($bodyJSONObj, '_items')) {
+            throw new InvalidDataException('Expected property "_items" not found.');
+        }
 
         if (count($bodyJSONObj->_items) > 0) {
             foreach ($bodyJSONObj->_items as $key => $item) {
@@ -91,9 +99,9 @@ class ContentApiSdk
     /**
      * Get package by identifier.
      *
-     * @param string $packageId    Package identifier
-     * @param bool   $resolveItems Inject full associations instead of references
-     *                             by uri.
+     * @param  string $packageId    Package identifier
+     * @param  bool   $resolveItems Inject full associations recursively instead
+     *                              of references by uri.
      *
      * @return Package
      */
@@ -101,8 +109,12 @@ class ContentApiSdk
     {
         $body = $this->client->makeApiCall(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_PACKAGES, $packageId));
 
-        // TODO: Built in data-type check
-        $package = new Package(json_decode($body));
+        $jsonData = json_decode($body);
+        if (is_null($jsonData) || json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidDataException('Returned data is not in (valid) json format.', json_last_error());
+        }
+
+        $package = new Package($jsonData);
 
         if ($resolveItems) {
             $associations = $this->getAssociationsFromPackage($package);
@@ -115,8 +127,9 @@ class ContentApiSdk
     /**
      * Get multiple packages based on a filter.
      *
-     * @param array $params       Filter parameters
-     * @param bool  $resolveItems Inject full item data in reponse
+     * @param  array  $params       Filter parameters
+     * @param  bool   $resolveItems Inject full associations recursively instead
+     *                              of references by uri.o
      *
      * @return mixed
      */
@@ -125,8 +138,12 @@ class ContentApiSdk
         $packages = null;
         $body = $this->client->makeApiCall(self::SUPERDESK_ENDPOINT_PACKAGES, $params);
 
-        // TODO: Built in data-type check
         $bodyJSONObj = json_decode($body);
+        if (is_null($bodyJSONObj) || json_last_error() !== JSON_ERROR_NONE) {
+            throw new InvalidDataException('Response could not be converted into object.', json_last_error());
+        } elseif (!property_exists($bodyJSONObj, '_items')) {
+            throw new InvalidDataException('Expected property "_items" not found.');
+        }
 
         if (count($bodyJSONObj->_items) > 0) {
             foreach ($bodyJSONObj->_items as $key => $item) {
@@ -154,7 +171,7 @@ class ContentApiSdk
      */
     private function getAssociationsFromPackage($package)
     {
-        $associations = new \stdClass();
+        $associations = new stdClass();
 
         if (isset($package->associations)) {
             foreach ($package->associations as $associatedName => $associatedItem) {
@@ -218,7 +235,7 @@ class ContentApiSdk
     }
 
     /**
-     * Returns a list of all supported endpoint for the Superdesk Publicapi.
+     * Returns a list of all supported endpoints for the Superdesk Content API.
      *
      * @return array
      */

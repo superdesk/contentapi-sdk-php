@@ -51,7 +51,6 @@ class ContentApiSdkSpec extends ObjectBehavior
     {
         $parameters = array('start_date' => '1970-01-01');
         $client->makeApiCall('/items', $parameters, null)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "items", "href": "items?start_date=2015-08-01" } }, "_items": [], "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
-
         $this->getItems($parameters)->shouldBe(null);
     }
 
@@ -84,8 +83,16 @@ class ContentApiSdkSpec extends ObjectBehavior
     function its_method_get_package_should_return_a_package($client)
     {
         $client->makeApiCall(Argument::Any(), null, null)->willReturn('{ "version": "v1", "associations": { "mainpic": { "type": "picture", "uri": "http://publicapi:5050/items/tag%3Ademodata.org%2C0001%3Aninjs_XYZ123" }, "storyText": { "type": "text", "uri": "http://publicapi:5050/items/tag%3Ademodata.org%2C0003%3Aninjs_XYZ123" } }, "person": [ { "name": "Hulk Hogan", "rel": "author" }, { "name": "The Phototaker", "rel": "photographer" } ], "_links": { "parent": { "title": "home", "href": "/" }, "collection": { "title": "packages", "href": "packages" }, "self": { "title": "Package", "href": "packages/tag:demodata.org,0012:ninjs_XYZ123" } }, "body_text": "Want to try McRide or McGhostHouse?", "profile": "text-photo", "copyrightnotice": "Free to use for everyone", "pubstatus": "usable", "language": "en", "type": "composite", "located": "Bilbao city center, Spain", "subject": [ { "name": "Business", "rel": "about" }, { "name": "Economy", "rel": "about" }, { "name": "Entertainment", "rel": "about" } ], "urgency": 8, "uri": "http://publicapi:5050/packages/tag%3Ademodata.org%2C0012%3Aninjs_XYZ123", "headline": "McDonalds opens its own theme park", "versioncreated": "2014-08-15T11:33:42+0000", "body_html": "<p>Want to try <em>McRide</em> or <em>McGhostHouse</em>?</p>", "byline": "Hulk Hogan, The Undertaker", "place": [ { "name": "Bilbao" }, { "name": "Spain" } ] }');
-
         $this->getPackage(Argument::any())->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\Data\Package');
+    }
+
+    function its_method_get_package_should_return_an_exception_on_invalid_data($client)
+    {
+        $client->makeApiCall(Argument::Any(), null, null)->willReturn(null);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetPackage(Argument::any());
+
+        $client->makeApiCall(Argument::Any(), null, null)->willReturn('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><error>Invalid response</error>');
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetPackage(Argument::any());
     }
 
     function its_method_get_packages_should_return_null_for_no_packages($client)
@@ -106,6 +113,20 @@ class ContentApiSdkSpec extends ObjectBehavior
         foreach ($array as $package) {
             $package->shouldHaveType('Superdesk\ContentApiSdk\Data\Package');
         }
+    }
+
+    function its_method_get_packages_should_return_an_exception_for_invalid_data($client)
+    {
+        $parameters = array('start_date' => '1970-01-01');
+
+        $client->makeApiCall('/packages', $parameters, null)->willReturn(null);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetPackages($parameters);
+
+        $client->makeApiCall('/packages', $parameters, null)->willReturn('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><error>Invalid response</error>');
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetPackages($parameters);
+
+        $client->makeApiCall('/packages', $parameters, null)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "packages", "href": "packages?start_date=2015-08-10" } }, "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetPackages($parameters);
     }
 
     function its_method_get_available_endpoints_should_contain_all_endpoints()

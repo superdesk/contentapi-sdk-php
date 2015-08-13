@@ -48,7 +48,7 @@ class ContentApiSdk
     /**
      * Get a single item via id.
      *
-     * @param  string $itemId Identifier for item
+     * @param string $itemId Identifier for item
      *
      * @return Item
      */
@@ -56,12 +56,15 @@ class ContentApiSdk
     {
         $body = $this->client->makeApiCall(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_ITEMS, $itemId));
 
-        $jsonData = json_decode($body);
-        if (is_null($jsonData) || json_last_error() !== JSON_ERROR_NONE) {
-            throw new InvalidDataException('Returned data is not in (valid) json format.', json_last_error());
+        $jsonObj = self::getValidJsonObj($body);
+        if ($jsonObj === false) {
+            throw new InvalidDataException(
+                sprintf('%s (%s)', 'Response body is not (valid) json.', json_last_error_msg()),
+                json_last_error()
+            );
         }
 
-        $item = new Item($jsonData);
+        $item = new Item($jsonObj);
 
         return $item;
     }
@@ -69,7 +72,7 @@ class ContentApiSdk
     /**
      * Get multiple items based on a filter.
      *
-     * @param  array $params Filter parameters
+     * @param array $params Filter parameters
      *
      * @return mixed
      */
@@ -78,19 +81,22 @@ class ContentApiSdk
         $return = null;
         $body = $this->client->makeApiCall(self::SUPERDESK_ENDPOINT_ITEMS, $params);
 
-        $bodyJSONObj = json_decode($body);
-        if (is_null($bodyJSONObj) || json_last_error() !== JSON_ERROR_NONE) {
-            throw new InvalidDataException('Response could not be converted into object.', json_last_error());
-        } elseif (!property_exists($bodyJSONObj, '_items')) {
+        $jsonObj = self::getValidJsonObj($body);
+        if ($jsonObj === false) {
+            throw new InvalidDataException(
+                sprintf('%s (%s)', 'Response body is not (valid) json.', json_last_error_msg()),
+                json_last_error()
+            );
+        } elseif (!property_exists($jsonObj, '_items')) {
             throw new InvalidDataException('Expected property "_items" not found.');
         }
 
-        if (count($bodyJSONObj->_items) > 0) {
-            foreach ($bodyJSONObj->_items as $key => $item) {
-                $bodyJSONObj->_items[$key] = new Item($item);
+        if (count($jsonObj->_items) > 0) {
+            foreach ($jsonObj->_items as $key => $item) {
+                $jsonObj->_items[$key] = new Item($item);
             }
 
-            $return = $bodyJSONObj->_items;
+            $return = $jsonObj->_items;
         }
 
         return $return;
@@ -99,9 +105,9 @@ class ContentApiSdk
     /**
      * Get package by identifier.
      *
-     * @param  string $packageId    Package identifier
-     * @param  bool   $resolveItems Inject full associations recursively instead
-     *                              of references by uri.
+     * @param string $packageId    Package identifier
+     * @param bool   $resolveItems Inject full associations recursively instead
+     *                             of references by uri.
      *
      * @return Package
      */
@@ -109,12 +115,15 @@ class ContentApiSdk
     {
         $body = $this->client->makeApiCall(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_PACKAGES, $packageId));
 
-        $jsonData = json_decode($body);
-        if (is_null($jsonData) || json_last_error() !== JSON_ERROR_NONE) {
-            throw new InvalidDataException('Returned data is not in (valid) json format.', json_last_error());
+        $jsonObj = self::getValidJsonObj($body);
+        if ($jsonObj === false) {
+            throw new InvalidDataException(
+                sprintf('%s (%s)', 'Response body is not (valid) json.', json_last_error_msg()),
+                json_last_error()
+            );
         }
 
-        $package = new Package($jsonData);
+        $package = new Package($jsonObj);
 
         if ($resolveItems) {
             $associations = $this->getAssociationsFromPackage($package);
@@ -127,9 +136,9 @@ class ContentApiSdk
     /**
      * Get multiple packages based on a filter.
      *
-     * @param  array  $params       Filter parameters
-     * @param  bool   $resolveItems Inject full associations recursively instead
-     *                              of references by uri.o
+     * @param array $params       Filter parameters
+     * @param bool  $resolveItems Inject full associations recursively instead
+     *                            of references by uri.o
      *
      * @return mixed
      */
@@ -138,18 +147,21 @@ class ContentApiSdk
         $packages = null;
         $body = $this->client->makeApiCall(self::SUPERDESK_ENDPOINT_PACKAGES, $params);
 
-        $bodyJSONObj = json_decode($body);
-        if (is_null($bodyJSONObj) || json_last_error() !== JSON_ERROR_NONE) {
-            throw new InvalidDataException('Response could not be converted into object.', json_last_error());
-        } elseif (!property_exists($bodyJSONObj, '_items')) {
+        $jsonObj = self::getValidJsonObj($body);
+        if ($jsonObj === false) {
+            throw new InvalidDataException(
+                sprintf('%s (%s)', 'Response body is not (valid) json.', json_last_error_msg()),
+                json_last_error()
+            );
+        } elseif (!property_exists($jsonObj, '_items')) {
             throw new InvalidDataException('Expected property "_items" not found.');
         }
 
-        if (count($bodyJSONObj->_items) > 0) {
-            foreach ($bodyJSONObj->_items as $key => $item) {
-                $bodyJSONObj->_items[$key] = new Package($item);
+        if (count($jsonObj->_items) > 0) {
+            foreach ($jsonObj->_items as $key => $item) {
+                $jsonObj->_items[$key] = new Package($item);
             }
-            $packages = $bodyJSONObj->_items;
+            $packages = $jsonObj->_items;
 
             if ($resolveItems) {
                 foreach ($packages as $id => $package) {
@@ -165,9 +177,9 @@ class ContentApiSdk
     /**
      * Gets full objects for all associations for a package.
      *
-     * @param  Package $package  A package
+     * @param Package $package A package
      *
-     * @return stdClass          List of associations
+     * @return stdClass List of associations
      */
     private function getAssociationsFromPackage($package)
     {
@@ -195,10 +207,10 @@ class ContentApiSdk
      * Overwrite the associations links in a packages with the actual association
      * data.
      *
-     * @param  Package  $package      Package
-     * @param  stdClass $associations Multiple items or packages
+     * @param Package  $package      Package
+     * @param stdClass $associations Multiple items or packages
      *
-     * @return Package                Package with data injected
+     * @return Package Package with data injected
      */
     private function injectAssociations($package, $associations)
     {
@@ -213,9 +225,9 @@ class ContentApiSdk
      * Tries to find a valid id in an uri, both item as package uris. The id
      * is returned urldecoded.
      *
-     * @param  string $uri Item or package uri
+     * @param string $uri Item or package uri
      *
-     * @return string      Urldecoded id
+     * @return string Urldecoded id
      */
     public static function getIdFromUri($uri)
     {
@@ -226,7 +238,7 @@ class ContentApiSdk
          */
 
         $uriPath = parse_url($uri, PHP_URL_PATH);
-        $objectId = str_replace(ContentApiSdk::getAvailableEndpoints(), '', $uriPath);
+        $objectId = str_replace(self::getAvailableEndpoints(), '', $uriPath);
         // Remove possible slashes and spaces, since we're working with urls
         $objectId = trim($objectId, '/ ');
         $objectId = urldecode($objectId);
@@ -245,5 +257,23 @@ class ContentApiSdk
             self::SUPERDESK_ENDPOINT_ITEMS,
             self::SUPERDESK_ENDPOINT_PACKAGES,
         );
+    }
+
+    /**
+     * Converts json string into StdClass object. Returns false when object is
+     * null or an error occured.
+     *
+     * @param string $jsonString JSON string
+     *
+     * @return stdClass|false
+     */
+    public static function getValidJsonObj($jsonString)
+    {
+        $jsonObj = json_decode($jsonString);
+        if (is_null($jsonObj) || json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+
+        return $jsonObj;
     }
 }

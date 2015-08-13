@@ -29,6 +29,17 @@ class ContentApiSdk
     const SUPERDESK_ENDPOINT_PACKAGES = '/packages';
 
     /**
+     * A list of parameters the Content API accepts.
+     *
+     * @var array
+     */
+    protected $validParameters = array(
+        'start_date', 'end_date',
+        // Not yet implements in the Content Api and will return errors when used
+        // 'q', 'type', 'fields', 'limit'
+    );
+
+    /**
      * Any (http) client that implements ClientInterface.
      *
      * @var ClientInterface
@@ -189,7 +200,6 @@ class ContentApiSdk
             foreach ($package->associations as $associatedName => $associatedItem) {
                 $associatedId = $this->getIdFromUri($associatedItem->uri);
 
-                // TODO: Check if we can make asynchronous calls here
                 if ($associatedItem->type == 'composite') {
                     $associatedObj = $this->getPackage($associatedId, true);
                 } else {
@@ -257,6 +267,16 @@ class ContentApiSdk
             self::SUPERDESK_ENDPOINT_ITEMS,
             self::SUPERDESK_ENDPOINT_PACKAGES,
         );
+    }
+
+    /**
+     * Returns a list of parameters accepted by the Content API.
+     *
+     * @return array
+     */
+    public static function getValidParameters()
+    {
+        return $validParameters;
     }
 
     /**

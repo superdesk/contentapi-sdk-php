@@ -17,7 +17,6 @@ namespace Superdesk\ContentApiSdk\Data;
 use stdClass;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 
-// TODO: Replace by entities (most likely)
 /**
  * Abstract for simple Item and Package objects.
  */

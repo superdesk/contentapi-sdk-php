@@ -122,8 +122,11 @@ class FileGetContentsClient implements ClientInterface
             return $params;
         }
 
-        // TODO: Filter invalid params
-        // TODO: Convert datatypes
+        foreach ($params as $key => $value) {
+            if (!in_array($key, $validParameters)) {
+                unset($params[$key]);
+            }
+        }
 
         return $params;
     }

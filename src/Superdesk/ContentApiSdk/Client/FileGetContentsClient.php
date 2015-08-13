@@ -58,7 +58,6 @@ class FileGetContentsClient implements ClientInterface
         $options = null,
         $returnFullResponse = false
     ) {
-        $context = null;
         $context = stream_context_create($this->processOptions($options));
 
         $response = @file_get_contents(
@@ -118,10 +117,11 @@ class FileGetContentsClient implements ClientInterface
      */
     private function processParameters($params)
     {
-        if (is_null($params)) {
+        if (!is_array($params)) {
             return $params;
         }
 
+        $validParameters = ContentApiSdk::getValidParameters();
         foreach ($params as $key => $value) {
             if (!in_array($key, $validParameters)) {
                 unset($params[$key]);

@@ -31,12 +31,13 @@ class ContentApiSdk
     /**
      * A list of parameters the Content API accepts.
      *
+     * Note: The following parameters are not implemented yet;
+     *       q, type, fields, limit
+     *
      * @var array
      */
     protected $validParameters = array(
         'start_date', 'end_date',
-        // Not yet implements in the Content Api and will return errors when used
-        // 'q', 'type', 'fields', 'limit'
     );
 
     /**

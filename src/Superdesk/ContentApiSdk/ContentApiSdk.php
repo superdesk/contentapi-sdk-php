@@ -267,10 +267,7 @@ class ContentApiSdk
     {
         $jsonObj = json_decode($jsonString);
         if (is_null($jsonObj) || json_last_error() !== JSON_ERROR_NONE) {
-            throw new InvalidDataException(
-                sprintf('%s (%s)', 'Response body is not (valid) json.', json_last_error_msg()),
-                json_last_error()
-            );
+            throw new InvalidDataException('Response body is not (valid) json.', json_last_error());
         }
 
         return $jsonObj;

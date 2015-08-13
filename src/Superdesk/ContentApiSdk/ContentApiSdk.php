@@ -68,13 +68,6 @@ class ContentApiSdk
         $body = $this->client->makeApiCall(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_ITEMS, $itemId));
 
         $jsonObj = self::getValidJsonObj($body);
-        if ($jsonObj === false) {
-            throw new InvalidDataException(
-                sprintf('%s (%s)', 'Response body is not (valid) json.', json_last_error_msg()),
-                json_last_error()
-            );
-        }
-
         $item = new Item($jsonObj);
 
         return $item;
@@ -93,12 +86,7 @@ class ContentApiSdk
         $body = $this->client->makeApiCall(self::SUPERDESK_ENDPOINT_ITEMS, $params);
 
         $jsonObj = self::getValidJsonObj($body);
-        if ($jsonObj === false) {
-            throw new InvalidDataException(
-                sprintf('%s (%s)', 'Response body is not (valid) json.', json_last_error_msg()),
-                json_last_error()
-            );
-        } elseif (!property_exists($jsonObj, '_items')) {
+        if (!property_exists($jsonObj, '_items')) {
             throw new InvalidDataException('Expected property "_items" not found.');
         }
 
@@ -127,13 +115,6 @@ class ContentApiSdk
         $body = $this->client->makeApiCall(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_PACKAGES, $packageId));
 
         $jsonObj = self::getValidJsonObj($body);
-        if ($jsonObj === false) {
-            throw new InvalidDataException(
-                sprintf('%s (%s)', 'Response body is not (valid) json.', json_last_error_msg()),
-                json_last_error()
-            );
-        }
-
         $package = new Package($jsonObj);
 
         if ($resolveItems) {
@@ -159,12 +140,7 @@ class ContentApiSdk
         $body = $this->client->makeApiCall(self::SUPERDESK_ENDPOINT_PACKAGES, $params);
 
         $jsonObj = self::getValidJsonObj($body);
-        if ($jsonObj === false) {
-            throw new InvalidDataException(
-                sprintf('%s (%s)', 'Response body is not (valid) json.', json_last_error_msg()),
-                json_last_error()
-            );
-        } elseif (!property_exists($jsonObj, '_items')) {
+        if (!property_exists($jsonObj, '_items')) {
             throw new InvalidDataException('Expected property "_items" not found.');
         }
 
@@ -291,7 +267,10 @@ class ContentApiSdk
     {
         $jsonObj = json_decode($jsonString);
         if (is_null($jsonObj) || json_last_error() !== JSON_ERROR_NONE) {
-            return false;
+            throw new InvalidDataException(
+                sprintf('%s (%s)', 'Response body is not (valid) json.', json_last_error_msg()),
+                json_last_error()
+            );
         }
 
         return $jsonObj;

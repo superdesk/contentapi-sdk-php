@@ -16,7 +16,7 @@ namespace spec\Superdesk\ContentApiSdk;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\Client\DefaultClient;
+use Superdesk\ContentApiSdk\Client\FileGetContentsClient;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 
 class ContentApiSdkSpec extends ObjectBehavior
@@ -26,9 +26,9 @@ class ContentApiSdkSpec extends ObjectBehavior
         $this->shouldHaveType('Superdesk\ContentApiSdk\ContentApiSdk');
     }
 
-    function let(DefaultClient $client)
+    function let(FileGetContentsClient $client)
     {
-        $client->beADoubleOf('Superdesk\ContentApiSdk\Client\DefaultClient');
+        $client->beADoubleOf('Superdesk\ContentApiSdk\Client\FileGetContentsClient');
         $this->beConstructedWith($client);
     }
 
@@ -41,10 +41,10 @@ class ContentApiSdkSpec extends ObjectBehavior
     function its_method_get_item_should_return_an_exception_on_invalid_data($client)
     {
         $client->makeApiCall(Argument::Any(), null, null)->willReturn(null);
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetItem(Argument::any());
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetItem(Argument::any());
 
         $client->makeApiCall(Argument::Any(), null, null)->willReturn('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><error>Invalid response</error>');
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetItem(Argument::any());
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetItem(Argument::any());
     }
 
     function its_method_get_items_should_return_null_for_no_items($client)
@@ -71,13 +71,13 @@ class ContentApiSdkSpec extends ObjectBehavior
         $parameters = array('start_date' => '1970-01-01');
 
         $client->makeApiCall('/items', $parameters, null)->willReturn(null);
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetItems($parameters);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetItems($parameters);
 
         $client->makeApiCall('/items', $parameters, null)->willReturn('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><error>Invalid response</error>');
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetItems($parameters);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetItems($parameters);
 
         $client->makeApiCall('/items', $parameters, null)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "items", "href": "items?start_date=2015-08-01" } }, "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetItems($parameters);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetItems($parameters);
     }
 
     function its_method_get_package_should_return_a_package($client)
@@ -89,10 +89,10 @@ class ContentApiSdkSpec extends ObjectBehavior
     function its_method_get_package_should_return_an_exception_on_invalid_data($client)
     {
         $client->makeApiCall(Argument::Any(), null, null)->willReturn(null);
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetPackage(Argument::any());
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetPackage(Argument::any());
 
         $client->makeApiCall(Argument::Any(), null, null)->willReturn('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><error>Invalid response</error>');
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetPackage(Argument::any());
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetPackage(Argument::any());
     }
 
     function its_method_get_packages_should_return_null_for_no_packages($client)
@@ -120,13 +120,13 @@ class ContentApiSdkSpec extends ObjectBehavior
         $parameters = array('start_date' => '1970-01-01');
 
         $client->makeApiCall('/packages', $parameters, null)->willReturn(null);
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetPackages($parameters);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetPackages($parameters);
 
         $client->makeApiCall('/packages', $parameters, null)->willReturn('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><error>Invalid response</error>');
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetPackages($parameters);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetPackages($parameters);
 
         $client->makeApiCall('/packages', $parameters, null)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "packages", "href": "packages?start_date=2015-08-10" } }, "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringGetPackages($parameters);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetPackages($parameters);
     }
 
     function its_method_get_available_endpoints_should_contain_all_endpoints()

@@ -16,11 +16,11 @@ namespace spec\Superdesk\ContentApiSdk\Client;
 
 use PhpSpec\ObjectBehavior;
 
-class DefaultClientSpec extends ObjectBehavior
+class FileGetContentsClient extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\Client\DefaultClient');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Client\FileGetContentsClient');
         $this->shouldImplement('Superdesk\ContentApiSdk\Client\ClientInterface');
     }
 

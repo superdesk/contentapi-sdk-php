@@ -20,7 +20,7 @@ use Superdesk\ContentApiSdk\Exception\ContentApiException;
  * Request service that implements all method regarding basic request/response
  * handling.
  */
-class DefaultClient implements ClientInterface
+class FileGetContentsClient implements ClientInterface
 {
     /**
      * Default values based on Superdesk.

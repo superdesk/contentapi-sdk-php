@@ -24,36 +24,45 @@ and methods are not guaranteed yet.
 
 ## Examples
 
+Two examples are included where it shown how to use the SDK. 
+
 ### Example 01
+
+This example uses the FileGetContentsClient, which is a very simple 
+file_get_contents call to the public api. Make sure that the fopen-wrappers
+are enabled. Please edit the example and fill in your Content API url.
+
+You can run the example via the cli with the command:
+```php sample/default-client/example.php```
+
+### Example 02
+
+Here we use the GuzzleClient which uses the Guzzle HTTP client library. It
+allows for more flexibility when extending the code, but also allows more 
+configuration options. Please edit the example and fill in your Content API url.
+
+To use this example please install the Guzzle HTTP client library:
+```php composer.phar require guzzlehttp/guzzle:~6.0```
+You can run the example via the cli with the command:
+```php sampe/guzzle-client/example.php```
+
+### Quickstart
 
 Get all items, filtering by date from the 1st of January 2015.
 
 ```php
+<?php
+
     use Superdesk\ContentApiSdk\ContentApiSdk;
-    use Superdesk\ContentApiSdk\Client\DefaultClient;
+    use Superdesk\ContentApiSdk\Client\FileGetContentsClient;
 
     $clientConfig = array(
         'base_uri' => 'http://publicapi.example.com:5050'
     );
     $parameters = array('start_date' => '2015-01-01');
 
-    $contentApi = new ContentApiSdk(new DefaultClient($clientConfig));
+    $contentApi = new ContentApiSdk(new FileGetContentsClient($clientConfig));
     $items = $contentApi->getItems($parameters);
-```
 
-### Example 02
-
-Get packages and resolve package contents, filtering packages by date from the 1st of January 2015.
-
-```php
-    use Superdesk\ContentApiSdk\ContentApiSdk;
-    use Superdesk\ContentApiSdk\Client\DefaultClient;
-
-    $clientConfig = array(
-        'base_uri' => 'http://publicapi.example.com:5050'
-    );
-    $parameters = array('start_date' => '2015-01-01');
-
-    $contentApi = new ContentApiSdk(new DefaultClient($clientConfig));
-    $packages = $contentApi->getPackages($parameters, true);
+    // Do something useful with your items here
 ```

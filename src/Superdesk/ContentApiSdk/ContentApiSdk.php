@@ -36,7 +36,7 @@ class ContentApiSdk
      *
      * @var array
      */
-    protected $validParameters = array(
+    public static $validParameters = array(
         'start_date', 'end_date',
     );
 
@@ -169,7 +169,7 @@ class ContentApiSdk
      *
      * @return stdClass List of associations
      */
-    private function getAssociationsFromPackage($package)
+    private function getAssociationsFromPackage(Package $package)
     {
         $associations = new stdClass();
 
@@ -199,7 +199,7 @@ class ContentApiSdk
      *
      * @return Package Package with data injected
      */
-    private function injectAssociations($package, $associations)
+    private function injectAssociations(Package $package, stdClass $associations)
     {
         if (count($package->associations) > 0 && count($associations) > 0) {
             $package->associations = $associations;
@@ -253,16 +253,17 @@ class ContentApiSdk
      */
     public static function getValidParameters()
     {
-        return $validParameters;
+        return self::$validParameters;
     }
 
     /**
-     * Converts json string into StdClass object. Returns false when object is
-     * null or an error occured.
+     * Converts json string into StdClass object. Throws an InvalidDataexception
+     * when string could not be converted to object.
      *
      * @param string $jsonString JSON string
      *
-     * @return stdClass|false
+     * @return object
+     * @throws InvalidDataException
      */
     public static function getValidJsonObj($jsonString)
     {

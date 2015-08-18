@@ -14,6 +14,7 @@
 
 namespace Superdesk\ContentApiSdk\Client;
 
+use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Exception\ContentApiException;
 
 /**
@@ -60,13 +61,15 @@ class FileGetContentsClient implements ClientInterface
     ) {
         $context = stream_context_create($this->processOptions($options));
 
+        // Silence error, we'll throw an exception on an invalid response
         $response = @file_get_contents(
             $this->buildUrl($endpoint, $this->processParameters($queryParameters)),
             false,
             $context
         );
         if ($response === false) {
-            throw new ContentApiException('Invalid response.');
+            $lastError = error_get_last();
+            throw new ContentApiException(sprintf('%s (%s)', 'Invalid response.', $lastError['message']), $lastError['type']);
         }
 
         if ($returnFullResponse) {

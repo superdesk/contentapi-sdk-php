@@ -48,6 +48,28 @@ class GuzzleClientSpec extends ObjectBehavior
         $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringMakeApiCall('', null, null);
     }
 
+    function it_should_be_able_to_return_a_response_as_a_string()
+    {
+        $this->makeApiCall('/headers', null, null, false)->shouldBeString();
+    }
+
+    function it_should_be_able_to_return_a_response_as_valid_array_format()
+    {
+        $response = $this->makeApiCall('/headers', null, null, true);
+        $response->shouldBeArray();
+        $response->shouldHaveKey('headers');
+        $response->shouldHaveKey('status');
+        $response->shouldHaveKey('reason');
+        $response->shouldHaveKey('version');
+        $response->shouldHaveKey('body');
+
+        $response['headers']->shouldBeArray();
+        $response['status']->shouldBeInteger();
+        $response['reason']->shouldBeString();
+        $response['version']->shouldBeString();
+        $response['body']->shouldBeString();
+    }
+
     function it_should_be_able_to_return_json()
     {
         $config = array(
@@ -60,7 +82,6 @@ class GuzzleClientSpec extends ObjectBehavior
         $response = $this->makeApiCall('/headers', null, null, true);
         $response['headers']->shouldHaveKey('Content-Type');
         $response['headers']['Content-Type']->shouldContain('application/json');
-        $response['body']->shouldBeString();
     }
 
     function it_should_be_able_to_return_xml()
@@ -75,6 +96,5 @@ class GuzzleClientSpec extends ObjectBehavior
         $response = $this->makeApiCall('/xml', null, null, true);
         $response['headers']->shouldHaveKey('Content-Type');
         $response['headers']['Content-Type']->shouldContain('application/xml');
-        $response['body']->shouldBeString();
     }
 }

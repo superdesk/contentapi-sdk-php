@@ -116,12 +116,16 @@ class GuzzleClient extends BaseClient implements ClientInterface
      */
     private function processParameters($params)
     {
-        if (is_null($params)) {
+        if (!is_array($params)) {
             return $params;
         }
 
-        // TODO: Filter invalid params
-        // TODO: Convert datatypes
+        $validParameters = ContentApiSdk::getValidParameters();
+        foreach ($params as $key => $value) {
+            if (!in_array($key, $validParameters)) {
+                unset($params[$key]);
+            }
+        }
 
         return $params;
     }

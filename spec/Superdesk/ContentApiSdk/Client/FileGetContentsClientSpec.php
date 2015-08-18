@@ -16,7 +16,7 @@ namespace spec\Superdesk\ContentApiSdk\Client;
 
 use PhpSpec\ObjectBehavior;
 
-class FileGetContentsClient extends ObjectBehavior
+class FileGetContentsClientSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
@@ -48,7 +48,7 @@ class FileGetContentsClient extends ObjectBehavior
         $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ContentApiException')->duringMakeApiCall('', null, null);
     }
 
-    function it_should_be_able_to_return_a_response()
+    function it_should_be_able_to_return_a_response_as_a_string()
     {
         $config = array(
             'base_uri' => 'http://httpbin.org',
@@ -61,7 +61,35 @@ class FileGetContentsClient extends ObjectBehavior
             )
         );
         $this->beConstructedWith($config);
+        $this->makeApiCall('/headers', null, null, false)->shouldBeString();
+    }
+
+    function it_should_be_able_to_return_a_response_as_valid_array_format()
+    {
+        $config = array(
+            'base_uri' => 'http://httpbin.org',
+            'options' => array(
+                'http' => array(
+                    'header' => array
+                    (
+                        "Accept: application/json\r\n"
+                    )
+                )
+            )
+        );
+        $this->beConstructedWith($config);
         $response = $this->makeApiCall('/headers', null, null, true);
+        $response->shouldBeArray();
+        $response->shouldHaveKey('headers');
+        $response->shouldHaveKey('status');
+        $response->shouldHaveKey('reason');
+        $response->shouldHaveKey('version');
+        $response->shouldHaveKey('body');
+
+        $response['headers']->shouldBeArray();
+        $response['status']->shouldBeInteger();
+        $response['reason']->shouldBeString();
+        $response['version']->shouldBeString();
         $response['body']->shouldBeString();
     }
 }

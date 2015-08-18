@@ -169,7 +169,7 @@ class FileGetContentsClient implements ClientInterface
     {
         return array(
             'headers' => array(),
-            'status' => '200',
+            'status' => 200,
             'reason' => 'OK',
             'version' => '',
             'body' => $response,

@@ -35,17 +35,6 @@ are enabled. Please edit the example and fill in your Content API url.
 You can run the example via the cli with the command:
 ```php sample/default-client/example.php```
 
-### Example 02
-
-Here we use the GuzzleClient which uses the Guzzle HTTP client library. It
-allows for more flexibility when extending the code, but also allows more 
-configuration options. Please edit the example and fill in your Content API url.
-
-To use this example please install the Guzzle HTTP client library:
-```php composer.phar require guzzlehttp/guzzle:~6.0```
-You can run the example via the cli with the command:
-```php sampe/guzzle-client/example.php```
-
 ### Quickstart
 
 Get all items, filtering by date from the 1st of January 2015.

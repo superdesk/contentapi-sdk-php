@@ -125,7 +125,7 @@ class ContentApiSdkSpec extends ObjectBehavior
         $client->makeApiCall('/packages', $parameters, null)->willReturn('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><error>Invalid response</error>');
         $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetPackages($parameters);
 
-        $client->makeApiCall('/packages', $parameters, null)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "packages", "href": "packages?start_date=2015-08-10" } }, "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
+        $client->makeApiCall('/packages', $parameters, null)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/i" }, "self": { "title": "packages", "href": "packages?start_date=2015-08-10" } }, "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
         $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetPackages($parameters);
     }
 
@@ -135,5 +135,25 @@ class ContentApiSdkSpec extends ObjectBehavior
         $endpoints->shouldBeArray();
         $endpoints->shouldContain(ContentApiSdk::SUPERDESK_ENDPOINT_ITEMS);
         $endpoints->shouldContain(ContentApiSdk::SUPERDESK_ENDPOINT_PACKAGES);
+    }
+
+    function its_method_get_valid_parameters_should_return_valid_parameters()
+    {
+        $validParameters = $this->getValidParameters();
+        $validParameters->shouldBe(ContentApiSdk::$validParameters);
+    }
+
+    function its_method_get_valid_json_obj_should_return_an_object_on_succes()
+    {
+        $jsonObj = self::getValidJsonObj('{ "some key" : "some value" }');
+        $jsonObj->shouldHaveType('stdClass');
+    }
+
+    function its_method_get_valid_json_obj_should_throw_an_exception_during_failure()
+    {
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetValidJsonObj(null);
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetValidJsonObj('<?xml version="1.0" encoding="UTF-8" standalone="no" ?><error>This is not json</error>');
+
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidDataException')->duringGetValidJsonObj('{ "some key" : "some value }');
     }
 }

@@ -36,7 +36,7 @@ class ContentApiSdk
      *
      * @var array
      */
-    protected $validParameters = array(
+    public static $validParameters = array(
         'start_date', 'end_date',
     );
 
@@ -253,7 +253,7 @@ class ContentApiSdk
      */
     public static function getValidParameters()
     {
-        return $validParameters;
+        return self::$validParameters;
     }
 
     /**
@@ -263,6 +263,7 @@ class ContentApiSdk
      * @param string $jsonString JSON string
      *
      * @return stdClass
+     * @throws InvalidDataException
      */
     public static function getValidJsonObj($jsonString)
     {

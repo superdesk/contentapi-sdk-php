@@ -262,7 +262,7 @@ class ContentApiSdk
      *
      * @param string $jsonString JSON string
      *
-     * @return stdClass
+     * @return object
      * @throws InvalidDataException
      */
     public static function getValidJsonObj($jsonString)

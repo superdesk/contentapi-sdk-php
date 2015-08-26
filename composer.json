@@ -1,6 +1,8 @@
 {
     "name": "superdesk/contentapi-sdk-php",
     "description": "Superdesk Content API SDK written in PHP",
+    "type": "project",
+    "keywords": ["Superdesk Web Publisher", "Superdesk", "Content API SDK", "Superdesk Content API", "Superdesk SDK"],
     "license":"GPL-3.0",
     "authors": [
         {
@@ -8,7 +10,6 @@
             "email": "mischa.gorinskat@sourcefabric.org"
         }
     ],
-    "type": "project",
     "autoload": {
         "psr-4": {
             "": "src/"
@@ -24,7 +25,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.1-dev"
+            "dev-master": "1.0.x-dev"
         }
     }
 }

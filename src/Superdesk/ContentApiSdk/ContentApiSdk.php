@@ -236,7 +236,7 @@ class ContentApiSdk
     /**
      * Returns a list of all supported endpoints for the Superdesk Content API.
      *
-     * @return array
+     * @return string[]
      */
     public static function getAvailableEndpoints()
     {
@@ -249,7 +249,7 @@ class ContentApiSdk
     /**
      * Returns a list of parameters accepted by the Content API.
      *
-     * @return array
+     * @return string[]
      */
     public static function getValidParameters()
     {

@@ -88,7 +88,7 @@ class FileGetContentsClient implements ClientInterface
      */
     private function getBaseUrl()
     {
-        return rtrim($this->config['base_uri'], '/') ;
+        return rtrim($this->config['base_uri'], '/');
     }
 
     /**

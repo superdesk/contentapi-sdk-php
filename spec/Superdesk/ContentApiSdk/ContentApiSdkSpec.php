@@ -16,7 +16,7 @@ namespace spec\Superdesk\ContentApiSdk;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\Client\FileGetContentsClient;
+use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 
 class ContentApiSdkSpec extends ObjectBehavior
@@ -26,7 +26,7 @@ class ContentApiSdkSpec extends ObjectBehavior
         $this->shouldHaveType('Superdesk\ContentApiSdk\ContentApiSdk');
     }
 
-    function let(FileGetContentsClient $client)
+    function let(ClientInterface $client)
     {
         $client->beADoubleOf('Superdesk\ContentApiSdk\Client\FileGetContentsClient');
         $this->beConstructedWith($client);

@@ -174,16 +174,26 @@ class ContentApiSdk
         $associations = new stdClass();
 
         if (isset($package->associations)) {
-            foreach ($package->associations as $associatedName => $associatedItem) {
-                $associatedId = $this->getIdFromUri($associatedItem->uri);
+            foreach ($package->associations as $associationGroupName => $associationGroupItems) {
 
-                if ($associatedItem->type == 'composite') {
-                    $associatedObj = $this->getPackage($associatedId, true);
-                } else {
-                    $associatedObj = $this->getItem($associatedId);
+                $groupAssociations = new stdClass();
+
+                foreach ($associationGroupItems AS $associatedName => $associatedItem) {
+                    $associatedId = $this->getIdFromUri($associatedItem->uri);
+
+                    if ($associatedItem->type == 'picture') continue;
+
+                    if ($associatedItem->type == 'composite') {
+                        $associatedObj = $this->getPackage($associatedId, true);
+                    } else {
+                        $associatedObj = $this->getItem($associatedId);
+                        $associatedObj->type = $associatedItem->type;
+                    }
+
+                    $groupAssociations->$associatedName = $associatedObj;
                 }
 
-                $associations->$associatedName = $associatedObj;
+                $associations->$associationGroupName = $groupAssociations;
             }
         }
 

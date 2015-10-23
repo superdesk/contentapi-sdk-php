@@ -27,6 +27,7 @@ class ContentApiSdk
 {
     const SUPERDESK_ENDPOINT_ITEMS = '/items';
     const SUPERDESK_ENDPOINT_PACKAGES = '/packages';
+    const PACKAGE_TYPE_COMPOSITE = 'composite';
 
     /**
      * A list of parameters the Content API accepts.
@@ -183,7 +184,7 @@ class ContentApiSdk
 
                     if ($associatedItem->type == 'picture') continue;
 
-                    if ($associatedItem->type == 'composite') {
+                    if ($associatedItem->type == self::PACKAGE_TYPE_COMPOSITE) {
                         $associatedObj = $this->getPackage($associatedId, true);
                     } else {
                         $associatedObj = $this->getItem($associatedId);

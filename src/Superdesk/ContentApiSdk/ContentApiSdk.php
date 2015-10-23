@@ -18,6 +18,7 @@ use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Data\Package;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
+use Superdesk\ContentApiSdk\Exception\ContentApiException;
 use stdClass;
 
 /**

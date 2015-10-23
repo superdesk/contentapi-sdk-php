@@ -185,10 +185,16 @@ class ContentApiSdk
                     if ($associatedItem->type == 'picture') continue;
 
                     if ($associatedItem->type == self::PACKAGE_TYPE_COMPOSITE) {
-                        $associatedObj = $this->getPackage($associatedId, true);
+                        try {
+                            $associatedObj = $this->getPackage($associatedId, true);
+                        } catch (ContentApiException $e) {
+                        }
                     } else {
-                        $associatedObj = $this->getItem($associatedId);
-                        $associatedObj->type = $associatedItem->type;
+                        try {
+                            $associatedObj = $this->getItem($associatedId);
+                            $associatedObj->type = $associatedItem->type;
+                        } catch (ContentApiException $e) {
+                        }
                     }
 
                     $groupAssociations->$associatedName = $associatedObj;

@@ -183,8 +183,6 @@ class ContentApiSdk
                 foreach ($associationGroupItems AS $associatedName => $associatedItem) {
                     $associatedId = $this->getIdFromUri($associatedItem->uri);
 
-                    if ($associatedItem->type == 'picture') continue;
-
                     if ($associatedItem->type == self::PACKAGE_TYPE_COMPOSITE) {
                         try {
                             $associatedObj = $this->getPackage($associatedId, true);

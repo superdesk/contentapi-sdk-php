@@ -18,6 +18,7 @@ use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Data\Package;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
+use Superdesk\ContentApiSdk\Exception\ContentApiException;
 use stdClass;
 
 /**
@@ -27,6 +28,7 @@ class ContentApiSdk
 {
     const SUPERDESK_ENDPOINT_ITEMS = '/items';
     const SUPERDESK_ENDPOINT_PACKAGES = '/packages';
+    const PACKAGE_TYPE_COMPOSITE = 'composite';
 
     /**
      * A list of parameters the Content API accepts.
@@ -174,16 +176,32 @@ class ContentApiSdk
         $associations = new stdClass();
 
         if (isset($package->associations)) {
-            foreach ($package->associations as $associatedName => $associatedItem) {
-                $associatedId = $this->getIdFromUri($associatedItem->uri);
+            foreach ($package->associations as $associationGroupName => $associationGroupItems) {
 
-                if ($associatedItem->type == 'composite') {
-                    $associatedObj = $this->getPackage($associatedId, true);
-                } else {
-                    $associatedObj = $this->getItem($associatedId);
+                $groupAssociations = new stdClass();
+
+                foreach ($associationGroupItems AS $associatedName => $associatedItem) {
+                    $associatedId = $this->getIdFromUri($associatedItem->uri);
+
+                    if ($associatedItem->type == 'picture') continue;
+
+                    if ($associatedItem->type == self::PACKAGE_TYPE_COMPOSITE) {
+                        try {
+                            $associatedObj = $this->getPackage($associatedId, true);
+                        } catch (ContentApiException $e) {
+                        }
+                    } else {
+                        try {
+                            $associatedObj = $this->getItem($associatedId);
+                            $associatedObj->type = $associatedItem->type;
+                        } catch (ContentApiException $e) {
+                        }
+                    }
+
+                    $groupAssociations->$associatedName = $associatedObj;
                 }
 
-                $associations->$associatedName = $associatedObj;
+                $associations->$associationGroupName = $groupAssociations;
             }
         }
 

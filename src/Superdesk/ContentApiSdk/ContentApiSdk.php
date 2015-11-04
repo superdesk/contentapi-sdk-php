@@ -32,14 +32,13 @@ class ContentApiSdk
 
     /**
      * A list of parameters the Content API accepts.
-     *
-     * Note: The following parameters are not implemented yet;
-     *       q, type, fields, limit
+     * https://github.com/superdesk/superdesk-content-api/blob/master/content_api/items/service.py#L76
      *
      * @var array
      */
     public static $validParameters = array(
-        'start_date', 'end_date',
+        'start_date', 'end_date', 'q', 'max_results', 'page',
+        'include_fields', 'exclude_fields'
     );
 
     /**

@@ -15,8 +15,8 @@
 namespace Superdesk\ContentApiSdk\Exception;
 
 /**
- * Invalid data exception for items and packages.
+ * Invalid argument exception for parameters.
  */
-class InvalidDataException extends ContentApiException
+class InvalidArgumentException extends ContentApiException
 {
 }

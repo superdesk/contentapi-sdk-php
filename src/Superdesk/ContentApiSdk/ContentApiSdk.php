@@ -17,8 +17,9 @@ namespace Superdesk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Data\Package;
-use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 use Superdesk\ContentApiSdk\Exception\ContentApiException;
+use Superdesk\ContentApiSdk\Exception\InvalidArgumentException;
+use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 use stdClass;
 
 /**
@@ -32,14 +33,13 @@ class ContentApiSdk
 
     /**
      * A list of parameters the Content API accepts.
-     *
-     * Note: The following parameters are not implemented yet;
-     *       q, type, fields, limit
+     * https://github.com/superdesk/superdesk-content-api/blob/master/content_api/items/service.py#L76
      *
      * @var array
      */
     public static $validParameters = array(
-        'start_date', 'end_date',
+        'start_date', 'end_date', 'q', 'max_results', 'page',
+        'include_fields', 'exclude_fields'
     );
 
     /**
@@ -273,7 +273,74 @@ class ContentApiSdk
     }
 
     /**
-     * Converts json string into StdClass object. Throws an InvalidDataexception
+     * Automatically converts parameters to types accepted by the Content API.
+     * Can also validate parameters, will unset invalid ones if $validate is
+     * set to true. Throws an InvalidArgumentException when an invalid value
+     * is supplied for a parameter.
+     *
+     * @param  mixed[] $requestParameters Array of parameter, where key
+     *                                    represents the parameter name
+     * @param  boolean $validate Validation boolean
+     *
+     * @return mixed[] Returns an array of parameters with API safe value types
+     * @throws InvalidArgumentException
+     */
+    public static function processParameters(array $requestParameters, $validate = false)
+    {
+        $processedParameters = array();
+        $validParameters = self::getValidParameters();
+
+        foreach ($requestParameters as $name => $value) {
+
+            if ($validate && !in_array($name, $validParameters)) {
+                unset($requestParameters[$name]);
+                continue;
+            }
+
+            switch ($name) {
+                case 'start_date':
+                case 'end_date':
+                        if (!is_string($value) && !($value instanceof \DateTime)) {
+                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string or DateTime.', $name));
+                        } elseif ($value instanceof \DateTime) {
+                            $value = $value->format('Y-m-d');
+                        } elseif (!preg_match('/\d\d\d\d\-\d\d\-\d\d/', $value)) {
+                            throw new InvalidArgumentException(sprintf('Parameter %s has invalid format, please use dddd-dd-dd.', $name));
+                        }
+                    break;
+                case 'q':
+                        if (!is_string($value)) {
+                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string.', $name));
+                        }
+                    break;
+                case 'include_fields':
+                case 'exclude_fields':
+                        if (!is_string($value) && !is_array($value)) {
+                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string or array.', $name));
+                        } elseif (is_array($value)) {
+                            $value = implode(',', $value);
+                        }
+                    break;
+                case 'page':
+                case 'max_results':
+                        if (!is_int($value) && !ctype_digit($value)) {
+                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type integer.', $name));
+                        } elseif (!is_int($value)) {
+                            $value = (int) $value;
+                        }
+                    break;
+                default:
+                    break;
+            }
+
+            $processedParameters[$name] = $value;
+        }
+
+        return $processedParameters;
+    }
+
+    /**
+     * Converts json string into StdClass object. Throws an InvalidDataException
      * when string could not be converted to object.
      *
      * @param string $jsonString JSON string

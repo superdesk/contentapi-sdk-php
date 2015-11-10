@@ -114,7 +114,7 @@ class FileGetContentsClient implements ClientInterface
     /**
      * Process request parameters.
      *
-     * @param mixed $params
+     * @param mixed[]|null $params
      *
      * @return array
      */
@@ -124,14 +124,7 @@ class FileGetContentsClient implements ClientInterface
             return $params;
         }
 
-        $validParameters = ContentApiSdk::getValidParameters();
-        foreach ($params as $key => $value) {
-            if (!in_array($key, $validParameters)) {
-                unset($params[$key]);
-            }
-        }
-
-        return $params;
+        return ContentApiSdk::processParameters($params, true);
     }
 
     /**

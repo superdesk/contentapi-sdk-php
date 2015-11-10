@@ -27,9 +27,25 @@ use stdClass;
  */
 class ContentApiSdk
 {
+    /**
+     * Items endpoint
+     */
     const SUPERDESK_ENDPOINT_ITEMS = '/items';
+
+    /**
+     * Package endpoint
+     */
     const SUPERDESK_ENDPOINT_PACKAGES = '/packages';
+
+    /**
+     * Type indication for packages
+     */
     const PACKAGE_TYPE_COMPOSITE = 'composite';
+
+    /**
+     * Supported API version by this SDK version
+     */
+    const API_VERSION = 1;
 
     /**
      * A list of parameters the Content API accepts.
@@ -356,5 +372,15 @@ class ContentApiSdk
         }
 
         return $jsonObj;
+    }
+
+    /**
+     * Returns version of api for creating verioned url.
+     *
+     * @return string
+     */
+    public static function getVersionURL()
+    {
+        return sprintf('v%d', self::API_VERSION);
     }
 }

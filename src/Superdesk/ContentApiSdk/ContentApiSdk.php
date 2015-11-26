@@ -14,6 +14,11 @@
 
 namespace Superdesk\ContentApiSdk;
 
+use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\API\Response;
+use Superdesk\ContentApiSdk\API\Pagerfanta\ItemAdapter;
+use Superdesk\ContentApiSdk\API\Pagerfanta\PackageAdapter;
+use Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Data\Package;
@@ -66,13 +71,117 @@ class ContentApiSdk
     protected $client;
 
     /**
+     * Hostname of the api instance
+     *
+     * @var string
+     */
+    protected $host;
+
+    /**
+     * Port of the api instalce
+     *
+     * @var int
+     */
+    protected $port = null;
+
+    /**
      * Construct method for class.
      *
      * @param ClientInterface $client
+     * @param string|null $host
+     * @param int|null $port
      */
-    public function __construct(ClientInterface $client)
+    public function __construct(ClientInterface $client, $host = null, $port = null)
     {
         $this->client = $client;
+
+        if (!is_null($host)) {
+            $this->setHost($host);
+        }
+
+        if (!is_null($port)) {
+            $this->setPort($port);
+        }
+    }
+
+    /**
+     * Gets the value of client.
+     *
+     * @return ClientInterface
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * Sets the value of client.
+     *
+     * @param ClientInterface $client Value to set
+     *
+     * @return self
+     */
+    public function setClient(ClientInterface $client)
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of apiHost.
+     *
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
+     * Sets the value of host.
+     *
+     * @param string $host Value to set
+     *
+     * @return self
+     */
+    public function setHost($host)
+    {
+        if (!is_string($host)) {
+            throw new ContentApiException('The property host should be of type integer.');
+        }
+
+        $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of port.
+     *
+     * @return int
+     */
+    public function getPort()
+    {
+        return $this->port;
+    }
+
+    /**
+     * Sets the value of port.
+     *
+     * @param int $port Value to set
+     *
+     * @return self
+     */
+    public function setPort($port)
+    {
+        if (!is_int($port)) {
+            throw new ContentApiException('The property port should be of type integer.');
+        }
+
+        $this->port = $port;
+
+        return $this;
     }
 
     /**
@@ -84,12 +193,16 @@ class ContentApiSdk
      */
     public function getItem($itemId)
     {
-        $body = $this->client->makeApiCall(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_ITEMS, $itemId));
+        $request = $this->getNewRequest(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_ITEMS, $itemId));
 
-        $jsonObj = self::getValidJsonObj($body);
-        $item = new Item($jsonObj);
+        try {
+            $response = $this->client->makeApiCall($request);
+            $item = new Item($response->getResources());
 
-        return $item;
+            return $item;
+        } catch (ClientException $e) {
+            throw new ContentApiException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -101,23 +214,20 @@ class ContentApiSdk
      */
     public function getItems($params)
     {
-        $return = null;
-        $body = $this->client->makeApiCall(self::SUPERDESK_ENDPOINT_ITEMS, $params);
+        $itemCollection = new ResourceCollection(
+            new ItemAdapter(
+                $this->client,
+                $this->getNewRequest(self::SUPERDESK_ENDPOINT_ITEMS, $params)
+            )
+        );
 
-        $jsonObj = self::getValidJsonObj($body);
-        if (!property_exists($jsonObj, '_items')) {
-            throw new InvalidDataException('Expected property "_items" not found.');
-        }
+        $page = (isset($params['page'])) ? $params['page'] : 1;
+        $maxResults = (isset($params['max_results'])) ? $params['max_results'] : 25;
 
-        if (count($jsonObj->_items) > 0) {
-            foreach ($jsonObj->_items as $key => $item) {
-                $jsonObj->_items[$key] = new Item($item);
-            }
+        $itemCollection->setCurrentPage($page);
+        $itemCollection->setMaxPerPage($maxResults);
 
-            $return = $jsonObj->_items;
-        }
-
-        return $return;
+        return $itemCollection;
     }
 
     /**
@@ -131,11 +241,12 @@ class ContentApiSdk
      */
     public function getPackage($packageId, $resolveItems = false)
     {
-        $body = $this->client->makeApiCall(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_PACKAGES, $packageId));
+        $request = $this->getNewRequest(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_PACKAGES, $packageId));
+        $response = $this->client->makeApiCall($request);
 
-        $jsonObj = self::getValidJsonObj($body);
-        $package = new Package($jsonObj);
+        $package = new Package($response->getResources());
 
+        // This can be removed once the API fully supports retrieving package associations
         if ($resolveItems) {
             $associations = $this->getAssociationsFromPackage($package);
             $package = $this->injectAssociations($package, $associations);
@@ -149,35 +260,28 @@ class ContentApiSdk
      *
      * @param array $params       Filter parameters
      * @param bool  $resolveItems Inject full associations recursively instead
-     *                            of references by uri.o
+     *                            of references by uri.
      *
      * @return mixed
      */
-    public function getPackages($params, $resolveItems = false)
+    public function getPackages($params, $resolveAssociations = false)
     {
-        $packages = null;
-        $body = $this->client->makeApiCall(self::SUPERDESK_ENDPOINT_PACKAGES, $params);
+        $packageCollection = new ResourceCollection(
+            new PackageAdapter(
+                $this->client,
+                $this->getNewRequest(self::SUPERDESK_ENDPOINT_PACKAGES, $params),
+                $this,
+                $resolveAssociations
+            )
+        );
 
-        $jsonObj = self::getValidJsonObj($body);
-        if (!property_exists($jsonObj, '_items')) {
-            throw new InvalidDataException('Expected property "_items" not found.');
-        }
+        $page = (isset($params['page'])) ? $params['page'] : 1;
+        $maxResults = (isset($params['max_results'])) ? $params['max_results'] : 25;
 
-        if (count($jsonObj->_items) > 0) {
-            foreach ($jsonObj->_items as $key => $item) {
-                $jsonObj->_items[$key] = new Package($item);
-            }
-            $packages = $jsonObj->_items;
+        $packageCollection->setPage($page);
+        $packageCollection->setMaxResults($maxResults);
 
-            if ($resolveItems) {
-                foreach ($packages as $id => $package) {
-                    $associations = $this->getAssociationsFromPackage($package);
-                    $packages[$id] = $this->injectAssociations($package, $associations);
-                }
-            }
-        }
-
-        return $packages;
+        return $packageCollection;
     }
 
     /**
@@ -238,6 +342,19 @@ class ContentApiSdk
         }
 
         return $package;
+    }
+
+    /**
+     * Shortcut method to create new class.
+     *
+     * @param  string $uri Uri of the request
+     * @param  array $parameters Parameters for the request object
+     *
+     * @return Request
+     */
+    public function getNewRequest($uri, array $parameters = array())
+    {
+        return new Request($this->host, $uri, $parameters, $this->port);
     }
 
     /**

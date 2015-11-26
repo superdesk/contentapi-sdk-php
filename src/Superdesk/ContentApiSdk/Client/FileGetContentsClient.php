@@ -14,8 +14,10 @@
 
 namespace Superdesk\ContentApiSdk\Client;
 
-use Superdesk\ContentApiSdk\ContentApiSdk;
-use Superdesk\ContentApiSdk\Exception\ContentApiException;
+use Superdesk\ContentApiSdk\Exception\ClientException;
+use Superdesk\ContentApiSdk\Exception\ResponseException;
+use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\API\Response;
 
 /**
  * Request service that implements all method regarding basic request/response
@@ -23,15 +25,6 @@ use Superdesk\ContentApiSdk\Exception\ContentApiException;
  */
 class FileGetContentsClient implements ClientInterface
 {
-    /**
-     * Default values based on Superdesk.
-     *
-     * @var array
-     */
-    protected $config = array(
-        'base_uri' => 'http://localhost:5050',
-    );
-
     /**
      * Default request options.
      *
@@ -45,86 +38,38 @@ class FileGetContentsClient implements ClientInterface
         )
     );
 
-    public function __construct(array $config = array())
+    /**
+     * Helper class for making actual request
+     *
+     * @var FileGetContentsClientHelper
+     */
+    protected $helper;
+
+    /**
+     * Initialize object
+     *
+     * @param FileGetContentsClientHelper $helper
+     */
+    public function __construct(FileGetContentsClientHelper $helper)
     {
-        $this->config = array_merge($this->config, $config);
+        $this->helper = $helper;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function makeApiCall(
-        $endpoint,
-        $queryParameters = null,
-        $options = null,
-        $returnFullResponse = false
-    ) {
-        $context = stream_context_create($this->processOptions($options));
-
-        // Silence error, we'll throw an exception on an invalid response
-        $response = @file_get_contents(
-            $this->buildUrl($endpoint, $this->processParameters($queryParameters)),
-            false,
-            $context
-        );
-        if ($response === false) {
-            $lastError = error_get_last();
-            throw new ContentApiException(sprintf('%s (%s)', 'Invalid response.', $lastError['message']), $lastError['type']);
-        }
-
-        if ($returnFullResponse) {
-            $return = $this->decodeResponse($response);
-        } else {
-            $return = $response;
-        }
-
-        return $return;
-    }
-
-    /**
-     * Returns base url based on configuration.
-     *
-     * @return string
-     */
-    private function getBaseUrl()
+    public function makeApiCall(Request $request)
     {
-        return sprintf('%s/%s', rtrim($this->config['base_uri'], '/'), ContentApiSdk::getVersionURL());
-    }
-
-    /**
-     * Builds full url from getBaseUrl method and additional query parameters.
-     *
-     * @param string $url    Url path
-     * @param mixed  $params See http_build_query for possibilities
-     *
-     * @return string
-     */
-    private function buildUrl($url, $params)
-    {
-        $url = sprintf(
-            '%s/%s?%s',
-            $this->getBaseUrl(),
-            ltrim($url, '/'),
-            ((!is_null($params)) ? http_build_query($params) : '')
+        $response = $this->helper->sendRequest(
+            $request->getFullUrl(),
+            $this->processOptions($request->getOptions())
         );
 
-        return $url;
-    }
-
-    /**
-     * Process request parameters.
-     *
-     * @param mixed[]|null $params
-     *
-     * @return array
-     */
-    private function processParameters($params)
-    {
-        if (!is_array($params)) {
-            return $params;
+        try {
+            return new Response($response['body'], $response['headers']);
+        } catch (ResponseException $e) {
+            throw new ClientException($e->getMessage(), $e->getCode(), $e);
         }
-
-        return ContentApiSdk::processParameters($params, true);
     }
 
     /**
@@ -132,7 +77,7 @@ class FileGetContentsClient implements ClientInterface
      * options from the first argument. Via the options key it's possible to
      * override options globally via .yml file.
      *
-     * @param  array|null $options Guzzle request headers / options
+     * @param  array|null $options File get contents request headers / options
      *
      * @return array
      */
@@ -151,24 +96,5 @@ class FileGetContentsClient implements ClientInterface
         }
 
         return $options;
-    }
-
-    /**
-     * Decodes a response into a standard formatted array. (See
-     * ClientInterface for documentation).
-     *
-     * @param  string $response
-     *
-     * @return array            Response as array
-     */
-    private function decodeResponse($response)
-    {
-        return array(
-            'headers' => array(),
-            'status' => 200,
-            'reason' => 'OK',
-            'version' => '',
-            'body' => $response,
-        );
     }
 }

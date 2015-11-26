@@ -15,6 +15,7 @@
 namespace spec\Superdesk\ContentApiSdk\Data;
 
 use PhpSpec\ObjectBehavior;
+use Superdesk\ContentApiSdk\API\Response;
 
 class PackageSpec extends ObjectBehavior
 {
@@ -29,5 +30,25 @@ class PackageSpec extends ObjectBehavior
         $validId = 'tag:demodata.org,0003:ninjs_XYZ123';
 
         $this->getId()->shouldBe($validId);
+    }
+
+    function it_should_convert_a_response_properly()
+    {
+        $response = new Response('{"headline": "foo bar", "version": "1", "type": "composite", "versioncreated": "2015-02-10T06:49:47+0000", "_links": {"parent": {"title": "home", "href": "/"}, "collection": {"title": "packages", "href": "packages"}, "self": {"title": "Package", "href": "packages/tag:example.com,0001:newsml_BRE9A606"}}, "pubstatus": "usable", "language": "en", "uri": "http://api.master.dev.superdesk.org/packages/tag%3Aexample.com%2C0001%3Anewsml_BRE9A606"}');
+
+        $this->beConstructedWith($response->getResources());
+
+        foreach ($response->getResources() as $property => $value) {
+            $this->shouldHaveProperty($property);
+        }
+    }
+
+    public function getMatchers()
+    {
+        return [
+            'haveProperty' => function ($object, $property) {
+                return property_exists($object, $property);
+            }
+        ];
     }
 }

@@ -12,22 +12,13 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\Client;
+namespace Superdesk\ContentApiSdk\API\Pagerfanta;
 
-use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\API\Response;
+use Pagerfanta\Pagerfanta;
 
 /**
- * Interface for clients.
+ * Resource collection wrapper for Pagerfanta.
  */
-interface ClientInterface
+class ResourceCollection extends Pagerfanta
 {
-    /**
-     * Makes a call to the public api and returns a response.
-     *
-     * @param  Request $request
-     *
-     * @return Response
-     */
-    public function makeApiCall(Request $request);
 }

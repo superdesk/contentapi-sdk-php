@@ -15,6 +15,7 @@
 namespace spec\Superdesk\ContentApiSdk\Data;
 
 use PhpSpec\ObjectBehavior;
+use Superdesk\ContentApiSdk\API\Response;
 
 class ItemSpec extends ObjectBehavior
 {
@@ -29,5 +30,25 @@ class ItemSpec extends ObjectBehavior
         $validId = 'tag:demodata.org,0012:ninjs_XYZ123';
 
         $this->getId()->shouldBe($validId);
+    }
+
+    function it_should_convert_a_response_properly()
+    {
+        $response = new Response('{"pubstatus": "usable", "_links": {"parent": {"href": "/", "title": "home"}, "collection": {"href": "items", "title": "items"}, "self": {"href": "items/tag:example.com,0001:newsml_BRE9A607", "title": "Item"}}, "body_text": "Andromeda and Milky Way will collide in about 2 billion years", "type": "text", "language": "en", "versioncreated": "2015-03-09T16:32:23+0000", "uri": "http://api.master.dev.superdesk.org/items/tag%3Aexample.com%2C0001%3Anewsml_BRE9A607", "version": "2", "headline": "Andromeda on a collision course"}');
+
+        $this->beConstructedWith($response->getResources());
+
+        foreach ($response->getResources() as $property => $value) {
+            $this->shouldHaveProperty($property);
+        }
+    }
+
+    public function getMatchers()
+    {
+        return [
+            'haveProperty' => function ($object, $property) {
+                return property_exists($object, $property);
+            }
+        ];
     }
 }

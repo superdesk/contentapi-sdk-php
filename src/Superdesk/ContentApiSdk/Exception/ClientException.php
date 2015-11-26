@@ -12,22 +12,11 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\Client;
-
-use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\API\Response;
+namespace Superdesk\ContentApiSdk\Exception;
 
 /**
- * Interface for clients.
+ * Client exception for the API.
  */
-interface ClientInterface
+class ClientException extends ContentApiException
 {
-    /**
-     * Makes a call to the public api and returns a response.
-     *
-     * @param  Request $request
-     *
-     * @return Response
-     */
-    public function makeApiCall(Request $request);
 }

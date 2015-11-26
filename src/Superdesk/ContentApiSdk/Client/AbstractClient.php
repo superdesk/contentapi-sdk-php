@@ -14,20 +14,7 @@
 
 namespace Superdesk\ContentApiSdk\Client;
 
-use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\API\Response;
-
-/**
- * Interface for clients.
- */
-interface ClientInterface
+abstract class AbstractClient implements ClientInterface
 {
-    /**
-     * Makes a call to the public api and returns a response.
-     *
-     * @param  Request $request
-     *
-     * @return Response
-     */
-    public function makeApiCall(Request $request);
+
 }

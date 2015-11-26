@@ -174,10 +174,10 @@ class ResponseSpec extends ObjectBehavior
 
     public function getMatchers()
     {
-        return [
+        return array(
             'haveProperty' => function ($object, $property) {
                 return property_exists($object, $property);
             }
-        ];
+        );
     }
 }

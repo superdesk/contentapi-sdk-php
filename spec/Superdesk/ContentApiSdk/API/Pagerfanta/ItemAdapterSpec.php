@@ -42,7 +42,7 @@ class ItemAdapterSpec extends ObjectBehavior
 
     public function getMatchers()
     {
-        return [
+        return array(
             'containItems' => function ($items) {
                 foreach ($items as $item) {
                     if (!$item instanceof Item) {
@@ -51,6 +51,6 @@ class ItemAdapterSpec extends ObjectBehavior
                 }
                 return true;
             }
-        ];
+        );
     }
 }

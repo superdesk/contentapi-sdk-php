@@ -44,7 +44,7 @@ class PackageAdapterSpec extends ObjectBehavior
 
     public function getMatchers()
     {
-        return [
+        return array(
             'containPackages' => function ($packages) {
                 foreach ($packages as $package) {
                     if (!$package instanceof Package) {
@@ -53,6 +53,6 @@ class PackageAdapterSpec extends ObjectBehavior
                 }
                 return true;
             }
-        ];
+        );
     }
 }

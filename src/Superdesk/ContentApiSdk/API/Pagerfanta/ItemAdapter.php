@@ -16,6 +16,7 @@ namespace Superdesk\ContentApiSdk\API\Pagerfanta;
 
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
+use Exception;
 
 /**
  * Adapter for items
@@ -34,7 +35,7 @@ class ItemAdapter extends ResourceAdapter
             foreach ($resources as $itemData) {
                 $items[] = new Item($itemData);
             }
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
             throw new InvalidDataException('Could not convert resources to items.', $e->getCode(), $e);
         }
 

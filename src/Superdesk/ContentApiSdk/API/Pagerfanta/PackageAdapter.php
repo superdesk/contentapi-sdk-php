@@ -16,6 +16,7 @@ namespace Superdesk\ContentApiSdk\API\Pagerfanta;
 
 use Superdesk\ContentApiSdk\Data\Package;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
+use Exception;
 
 /**
  * Adapter for package
@@ -64,7 +65,7 @@ class PackageAdapter extends ResourceAdapter
                     $packages[$id] = $this->apiInstance->injectAssociations($package, $associations);
                 }
             }
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
             throw new InvalidDataException('Could not convert resources to packages.', $e->getCode(), $e);
         }
 

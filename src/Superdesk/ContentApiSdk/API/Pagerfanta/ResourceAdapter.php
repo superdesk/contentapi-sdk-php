@@ -76,6 +76,8 @@ class ResourceAdapter implements AdapterInterface
      * @param integer $length The length.
      *
      * @return array|\Traversable The slice.
+     *
+     * @throws InvalidDataException
      */
     public function getSlice($offset, $length)
     {

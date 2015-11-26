@@ -18,6 +18,8 @@ use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Exception\ResponseException;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 use stdClass;
+use SimpleXMLElement;
+use Exception;
 
 /**
  * API Response object.
@@ -157,11 +159,11 @@ class Response
 
         // Try to determine content type based on body
         try {
-            $xml = new \SimpleXMLElement($this->rawBody);
+            $xml = new SimpleXMLElement($this->rawBody);
             $this->contentType = self::CONTENT_TYPE_XML;
 
             return;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Not xml
         }
 

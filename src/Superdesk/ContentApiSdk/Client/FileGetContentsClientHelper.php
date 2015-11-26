@@ -29,6 +29,8 @@ class FileGetContentsClientHelper
      * @param array $options Options for stream_context_create
      *
      * @return array Returns an array container headers and body or the response.
+     *
+     * @throws ClientException When the reponse did non succeed
      */
     public function sendRequest($url, $options)
     {

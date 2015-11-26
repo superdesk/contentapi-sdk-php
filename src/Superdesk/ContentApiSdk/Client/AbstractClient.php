@@ -16,5 +16,4 @@ namespace Superdesk\ContentApiSdk\Client;
 
 abstract class AbstractClient implements ClientInterface
 {
-
 }

@@ -8,6 +8,10 @@
         {
             "name": "Mischa Gorinskat",
             "email": "mischa.gorinskat@sourcefabric.org"
+        },
+        {
+            "name": "The Muppetshow",
+            "role": "Masterminds of the code"
         }
     ],
     "autoload": {

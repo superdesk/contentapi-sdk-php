@@ -32,12 +32,12 @@ class RequestSpec extends ObjectBehavior
 
     function it_should_return_a_base_url()
     {
-        $this->getBaseUrl()->shouldBe('https://example.com:80/v1');
+        $this->getBaseUrl()->shouldBe('https://example.com:80');
     }
 
     function it_should_return_a_full_url()
     {
-        $this->getFullUrl()->shouldBe('https://example.com:80/v1/request/uri?start_date=1970-01-01');
+        $this->getFullUrl()->shouldBe('https://example.com:80/request/uri?start_date=1970-01-01');
     }
 
     function it_should_validate_parameters_on_request()

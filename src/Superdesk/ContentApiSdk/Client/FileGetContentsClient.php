@@ -16,7 +16,7 @@ namespace Superdesk\ContentApiSdk\Client;
 
 use Superdesk\ContentApiSdk\Exception\ClientException;
 use Superdesk\ContentApiSdk\Exception\ResponseException;
-use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\API\Request\RequestInterface;
 use Superdesk\ContentApiSdk\API\Response;
 
 /**
@@ -68,7 +68,7 @@ class FileGetContentsClient implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function makeApiCall(Request $request)
+    public function makeApiCall(RequestInterface $request)
     {
         $response = $this->helper->sendRequest(
             $request->getFullUrl(),

@@ -12,22 +12,24 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\Client;
+namespace Superdesk\ContentApiSdk\API\Request;
 
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
-use Superdesk\ContentApiSdk\API\Response;
+use Superdesk\ContentApiSdk\ContentApiSdk;
 
 /**
- * Interface for clients.
+ * Version decorator for API request.
  */
-interface ClientInterface
+class VersionDecorator extends RequestDecorator
 {
     /**
-     * Makes a call to the public api and returns a response.
+     * Adds version to request uri.
      *
-     * @param  RequestInterface $request
-     *
-     * @return Response
+     * @return self
      */
-    public function makeApiCall(RequestInterface $request);
+    public function addVersion()
+    {
+        $this->setUri(sprintf('%s/%s', ContentApiSdk::getVersionURL(), $this->getUri()));
+
+        return $this;
+    }
 }

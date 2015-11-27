@@ -14,7 +14,6 @@
 
 namespace Superdesk\ContentApiSdk\Client;
 
-use Superdesk\ContentApiSdk\API\Request;
 use Superdesk\ContentApiSdk\Exception\ClientException;
 
 /**

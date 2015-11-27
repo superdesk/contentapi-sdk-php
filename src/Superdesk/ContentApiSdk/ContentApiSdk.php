@@ -15,6 +15,7 @@
 namespace Superdesk\ContentApiSdk;
 
 use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\API\Request\VersionDecorator;
 use Superdesk\ContentApiSdk\API\Response;
 use Superdesk\ContentApiSdk\API\Pagerfanta\ItemAdapter;
 use Superdesk\ContentApiSdk\API\Pagerfanta\PackageAdapter;
@@ -276,6 +277,7 @@ class ContentApiSdk
             )
         );
 
+        // TODO: Check if we actually need these 5 lines of code
         $page = (isset($params['page'])) ? $params['page'] : 1;
         $maxResults = (isset($params['max_results'])) ? $params['max_results'] : 25;
 
@@ -355,7 +357,11 @@ class ContentApiSdk
      */
     public function getNewRequest($uri, array $parameters = array())
     {
-        return new Request($this->host, $uri, $parameters, $this->port);
+        $request = new Request($this->host, $uri, $parameters, $this->port);
+        $versionedRequest = new VersionDecorator($request);
+        $versionedRequest->addVersion();
+
+        return $versionedRequest;
     }
 
     /**
@@ -421,13 +427,13 @@ class ContentApiSdk
      */
     public static function processParameters(array $requestParameters, $validate = false)
     {
-        $processedParameters = array();
+        $processedParameters = $requestParameters;
         $validParameters = self::getValidParameters();
 
         foreach ($requestParameters as $name => $value) {
 
             if ($validate && !in_array($name, $validParameters)) {
-                unset($requestParameters[$name]);
+                unset($processedParameters[$name]);
                 continue;
             }
 

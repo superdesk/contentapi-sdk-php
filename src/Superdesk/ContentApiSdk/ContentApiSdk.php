@@ -22,6 +22,7 @@ use Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Data\Package;
+use Superdesk\ContentApiSdk\Exception\ClientException;
 use Superdesk\ContentApiSdk\Exception\ContentApiException;
 use Superdesk\ContentApiSdk\Exception\InvalidArgumentException;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
@@ -278,8 +279,8 @@ class ContentApiSdk
         $page = (isset($params['page'])) ? $params['page'] : 1;
         $maxResults = (isset($params['max_results'])) ? $params['max_results'] : 25;
 
-        $packageCollection->setPage($page);
-        $packageCollection->setMaxResults($maxResults);
+        $packageCollection->setCurrentPage($page);
+        $packageCollection->setMaxPerPage($maxResults);
 
         return $packageCollection;
     }

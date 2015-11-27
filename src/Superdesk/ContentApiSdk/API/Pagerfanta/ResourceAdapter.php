@@ -68,7 +68,7 @@ class ResourceAdapter implements AdapterInterface
     {
         $response = $this->doCall();
 
-        return $this->response->getTotalResults();
+        return $response->getTotalResults();
     }
 
     /**

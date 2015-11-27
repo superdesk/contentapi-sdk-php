@@ -60,7 +60,7 @@ class ContentApiSdkSpec extends ObjectBehavior
         $parameters = array('start_date' => '1970-01-01');
         $request = $this->getNewRequest(ContentApiSdk::SUPERDESK_ENDPOINT_PACKAGES, $parameters);
         $client->makeApiCall($request)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "items", "href": "items?start_date=2015-08-01" } }, "_items": [], "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
-        $this->getItems($parameters)->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection');
+        $this->getPackages($parameters)->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection');
     }
 
     function its_method_get_available_endpoints_should_contain_all_endpoints()

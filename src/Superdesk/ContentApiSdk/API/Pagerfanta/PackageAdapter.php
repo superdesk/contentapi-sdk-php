@@ -34,6 +34,13 @@ class PackageAdapter extends ResourceAdapter
     protected $apiInstance;
 
     /**
+     * Resolve package associations.
+     *
+     * @var boolean
+     */
+    protected $resolveAssociations;
+
+    /**
      * Instantiate object.
      *
      * @param ClientInterface $client HTTP client

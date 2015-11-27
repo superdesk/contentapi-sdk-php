@@ -46,13 +46,23 @@ class FileGetContentsClient implements ClientInterface
     protected $helper;
 
     /**
+     * Configuration object.
+     *
+     * @var array
+     */
+    protected $config = array();
+
+    /**
      * Initialize object
      *
      * @param FileGetContentsClientHelper $helper
      */
-    public function __construct(FileGetContentsClientHelper $helper)
+    public function __construct(FileGetContentsClientHelper $helper, array $config = null)
     {
         $this->helper = $helper;
+        if (is_array($config)) {
+            $this->config = $config;
+        }
     }
 
     /**

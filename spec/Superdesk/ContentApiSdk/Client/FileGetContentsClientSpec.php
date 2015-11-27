@@ -28,7 +28,7 @@ class FileGetContentsClientSpec extends ObjectBehavior
         $request->beADoubleOf('\Superdesk\ContentApiSdk\API\Request');
         $request->getOptions()->willReturn(array());
         $helper->beADoubleOf('\Superdesk\ContentApiSdk\Client\FileGetContentsClientHelper');
-        $this->beConstructedWith($helper);
+        $this->beConstructedWith($helper, array());
     }
 
     function it_is_initializable()

@@ -110,9 +110,9 @@ class Response
     protected $total;
 
     /**
-     * Array of resources.
+     * Array container resources or stdClass with properties.
      *
-     * @var array
+     * @var array|stdClass
      */
     protected $resources;
 
@@ -202,33 +202,36 @@ class Response
             case self::CONTENT_TYPE_JSON:
 
                 try {
-                    $response = ContentApiSdk::getValidJsonObj($this->rawBody);
+                    $responseJson = ContentApiSdk::getValidJsonObj($this->rawBody);
                 } catch (InvalidDataException $e) {
                     throw new ResponseException($e->getMessage(), $e->getCode(), $e);
                 }
 
-                $this->type = $response->_links->self->title;
-                $this->href = $response->_links->self->href;
+                $this->type = $responseJson->_links->self->title;
+                $this->href = $responseJson->_links->self->href;
 
-                if (property_exists($response, '_meta')) {
-                    $this->page = $response->_meta->page;
-                    $this->maxResults = $response->_meta->max_results;
-                    $this->total = $response->_meta->total;
+                if (property_exists($responseJson, '_meta')) {
+                    $this->page = $responseJson->_meta->page;
+                    $this->maxResults = $responseJson->_meta->max_results;
+                    $this->total = $responseJson->_meta->total;
 
-                    $this->nextPage = (property_exists($response->_links, 'next')) ? $this->page + 1 : $this->page;
-                    $this->prevPage = (property_exists($response->_links, 'prev')) ? $this->page - 1 : $this->page;
+                    $this->nextPage = (property_exists($responseJson->_links, 'next')) ? $this->page + 1 : $this->page;
+                    $this->prevPage = (property_exists($responseJson->_links, 'prev')) ? $this->page - 1 : $this->page;
                     // TODO: Check if casting to int is really required
-                    $this->lastPage = (property_exists($response->_links, 'last')) ? (int) ceil($this->total / $this->maxResults) : $this->page;
+                    $this->lastPage = (property_exists($responseJson->_links, 'last')) ? (int) ceil($this->total / $this->maxResults) : $this->page;
 
-                    $this->resources = $response->_items;
+                    $this->resources = $responseJson->_items;
                 } else {
                     $resourceObj = new stdClass();
-                    foreach ($response as $key => $value) {
-                        if (in_array($key, $this->metaKeys)) {
-                            continue;
-                        }
 
-                        $resourceObj->$key = $value;
+                    if (is_array($responseJson) || $responseJson instanceof stdClass) {
+                        foreach ($responseJson as $key => $value) {
+                            if (in_array($key, $this->metaKeys)) {
+                                continue;
+                            }
+
+                            $resourceObj->$key = $value;
+                        }
                     }
 
                     $this->resources = $resourceObj;

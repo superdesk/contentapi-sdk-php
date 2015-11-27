@@ -15,6 +15,8 @@
 namespace Superdesk\ContentApiSdk\API\Pagerfanta;
 
 use Pagerfanta\Adapter\AdapterInterface;
+use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\Client\ClientInterface;
 
 /**
  * Base adapter for api resources.
@@ -24,24 +26,24 @@ class ResourceAdapter implements AdapterInterface
     /**
      * HTTP Client.
      *
-     * @var Superdesk\CotentApiSdk\Client\ClientInterface
+     * @var ClientInterface
      */
     protected $client;
 
     /**
      * API Request object.
      *
-     * @var Superdesk\CotentApiSdk\API\Request
+     * @var Request
      */
     protected $request;
 
     /**
      * Instantiate object.
      *
-     * @param Superdesk\CotentApiSdk\Client\ClientInterface $client HTTP Client
-     * @param Superdesk\CotentApiSdk\API\Request $request API Request object
+     * @param ClientInterface $client HTTP Client
+     * @param Request $request API Request object
      */
-    public function __construct($client, $request)
+    public function __construct(ClientInterface $client, Request $request)
     {
         $this->client = $client;
         $this->request = $request;
@@ -50,7 +52,7 @@ class ResourceAdapter implements AdapterInterface
     /**
      * Make call HTTP call.
      *
-     * @return Superdesk\ContentApiSdk\API\Response API Response object
+     * @return \Superdesk\ContentApiSdk\API\Response API Response object
      */
     private function doCall()
     {

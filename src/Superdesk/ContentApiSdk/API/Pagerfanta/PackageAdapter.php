@@ -14,6 +14,9 @@
 
 namespace Superdesk\ContentApiSdk\API\Pagerfanta;
 
+use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\Client\ClientInterface;
+use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Data\Package;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 use Exception;
@@ -33,13 +36,17 @@ class PackageAdapter extends ResourceAdapter
     /**
      * Instantiate object.
      *
-     * @param Superdesk\CotentApiSdk\Client\ClientInterface $client HTTP client
-     * @param Superdesk\CotentApiSdk\API\Request $request API Request is_object(var)
-     * @param Superdesk\CotentApiSdk\ContentApiSdk $apiInstance SDK Instance
+     * @param ClientInterface $client HTTP client
+     * @param Request $request API Request is_object(var)
+     * @param ContentApiSdk $apiInstance SDK Instance
      * @param boolean $resolveAssociations Resolve package associations
      */
-    public function __construct($client, $request, $apiInstance, $resolveAssociations)
-    {
+    public function __construct(
+        ClientInterface $client,
+        Request $request,
+        ContentApiSdk $apiInstance,
+        $resolveAssociations
+    ) {
         parent::__construct($client, $request);
 
         $this->apiInstance = $apiInstance;

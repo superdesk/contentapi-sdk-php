@@ -210,7 +210,7 @@ class ContentApiSdk
      *
      * @param array $params Filter parameters
      *
-     * @return mixed
+     * @return ResourceCollection
      */
     public function getItems($params)
     {
@@ -262,7 +262,7 @@ class ContentApiSdk
      * @param bool  $resolveItems Inject full associations recursively instead
      *                            of references by uri.
      *
-     * @return mixed
+     * @return ResourceCollection
      */
     public function getPackages($params, $resolveAssociations = false)
     {

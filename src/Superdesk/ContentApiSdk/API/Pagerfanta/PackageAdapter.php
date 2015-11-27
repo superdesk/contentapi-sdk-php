@@ -29,7 +29,7 @@ class PackageAdapter extends ResourceAdapter
     /**
      * SDK Instance.
      *
-     * @var Superdesk\CotentApiSdk\CotentApiSdk
+     * @var ContentApiSdk
      */
     protected $apiInstance;
 

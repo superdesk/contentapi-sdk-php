@@ -233,13 +233,13 @@ class ContentApiSdk
     /**
      * Get package by identifier.
      *
-     * @param string $packageId    Package identifier
-     * @param bool   $resolveItems Inject full associations recursively instead
-     *                             of references by uri.
+     * @param string $packageId Package identifier
+     * @param bool   $resolveAssociations Inject full associations recursively
+     *                                    instead of references by uri.
      *
      * @return Package
      */
-    public function getPackage($packageId, $resolveItems = false)
+    public function getPackage($packageId, $resolveAssociations = false)
     {
         $request = $this->getNewRequest(sprintf('%s/%s', self::SUPERDESK_ENDPOINT_PACKAGES, $packageId));
         $response = $this->client->makeApiCall($request);
@@ -247,7 +247,7 @@ class ContentApiSdk
         $package = new Package($response->getResources());
 
         // This can be removed once the API fully supports retrieving package associations
-        if ($resolveItems) {
+        if ($resolveAssociations) {
             $associations = $this->getAssociationsFromPackage($package);
             $package = $this->injectAssociations($package, $associations);
         }
@@ -258,9 +258,9 @@ class ContentApiSdk
     /**
      * Get multiple packages based on a filter.
      *
-     * @param array $params       Filter parameters
-     * @param bool  $resolveItems Inject full associations recursively instead
-     *                            of references by uri.
+     * @param array $params Filter parameters
+     * @param bool  $resolveAssociations Inject full associations recursively
+     *                                   instead of references by uri.
      *
      * @return ResourceCollection
      */
@@ -291,7 +291,7 @@ class ContentApiSdk
      *
      * @return stdClass List of associations
      */
-    private function getAssociationsFromPackage(Package $package)
+    public function getAssociationsFromPackage(Package $package)
     {
         $associations = new stdClass();
 
@@ -335,7 +335,7 @@ class ContentApiSdk
      *
      * @return Package Package with data injected
      */
-    private function injectAssociations(Package $package, stdClass $associations)
+    public function injectAssociations(Package $package, stdClass $associations)
     {
         if (count($package->associations) > 0 && count($associations) > 0) {
             $package->associations = $associations;

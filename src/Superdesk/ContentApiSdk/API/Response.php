@@ -224,14 +224,12 @@ class Response
                 } else {
                     $resourceObj = new stdClass();
 
-                    if (is_array($responseJson) || $responseJson instanceof stdClass) {
-                        foreach ($responseJson as $key => $value) {
-                            if (in_array($key, $this->metaKeys)) {
-                                continue;
-                            }
-
-                            $resourceObj->$key = $value;
+                    foreach ($responseJson as $key => $value) {
+                        if (in_array($key, $this->metaKeys)) {
+                            continue;
                         }
+
+                        $resourceObj->$key = $value;
                     }
 
                     $this->resources = $resourceObj;

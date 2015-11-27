@@ -77,7 +77,7 @@ class ResourceAdapter implements AdapterInterface
      * @param integer $offset The offset.
      * @param integer $length The length.
      *
-     * @return array|\Traversable The slice.
+     * @return array|stdClass|\Traversable The slice.
      *
      * @throws InvalidDataException
      */

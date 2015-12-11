@@ -12,14 +12,11 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\Exception;
+namespace Superdesk\ContentApiSdk\Exception;
 
-use PhpSpec\ObjectBehavior;
-
-class ContentApiExceptionSpec extends ObjectBehavior
+/**
+ * Request exception for the API.
+ */
+class RequestException extends ContentApiException
 {
-    function it_is_initializable()
-    {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\Exception\ContentApiException');
-    }
 }

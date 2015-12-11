@@ -12,14 +12,13 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\Exception;
+namespace Superdesk\ContentApiSdk\API\Pagerfanta;
 
-use PhpSpec\ObjectBehavior;
+use Pagerfanta\Pagerfanta;
 
-class ContentApiExceptionSpec extends ObjectBehavior
+/**
+ * Resource collection wrapper for Pagerfanta.
+ */
+class ResourceCollection extends Pagerfanta
 {
-    function it_is_initializable()
-    {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\Exception\ContentApiException');
-    }
 }

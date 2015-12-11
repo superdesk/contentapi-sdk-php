@@ -12,14 +12,22 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\Exception;
+namespace spec\Superdesk\ContentApiSdk\API\Pagerfanta;
 
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
+use Superdesk\ContentApiSdk\Client\ClientInterface;
+use Superdesk\ContentApiSdk\API\Request;
 
-class ContentApiExceptionSpec extends ObjectBehavior
+class ResourceAdapterSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\Exception\ContentApiException');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\API\Pagerfanta\ResourceAdapter');
+    }
+
+    function let(ClientInterface $client, Request $request)
+    {
+        $this->beConstructedWith($client, $request);
     }
 }

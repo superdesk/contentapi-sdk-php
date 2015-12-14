@@ -27,6 +27,7 @@ use Superdesk\ContentApiSdk\Exception\ClientException;
 use Superdesk\ContentApiSdk\Exception\ContentApiException;
 use Superdesk\ContentApiSdk\Exception\InvalidArgumentException;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
+use Exception;
 use stdClass;
 
 /**
@@ -73,7 +74,7 @@ class ContentApiSdk
     /**
      * Any (http) client that implements ClientInterface.
      *
-     * @var ClientInterface
+     * @var ApiClientInterface
      */
     protected $client;
 
@@ -121,7 +122,7 @@ class ContentApiSdk
     /**
      * Gets the value of client.
      *
-     * @return ClientInterface
+     * @return ApiClientInterface
      */
     public function getClient()
     {
@@ -131,11 +132,11 @@ class ContentApiSdk
     /**
      * Sets the value of client.
      *
-     * @param ClientInterface $client Value to set
+     * @param ApiClientInterface $client Value to set
      *
      * @return self
      */
-    public function setClient(ClientInterface $client)
+    public function setClient(ApiClientInterface $client)
     {
         $this->client = $client;
 
@@ -322,12 +323,14 @@ class ContentApiSdk
                         try {
                             $associatedObj = $this->getPackage($associatedId, true);
                         } catch (ContentApiException $e) {
+                            // If subrequests fail, dont fail main request
                         }
                     } else {
                         try {
                             $associatedObj = $this->getItem($associatedId);
                             $associatedObj->type = $associatedItem->type;
                         } catch (ContentApiException $e) {
+                            // If subrequests fail, dont fail main request
                         }
                     }
 
@@ -498,7 +501,7 @@ class ContentApiSdk
      * @param string $jsonString JSON string
      *
      * @return object
-     * @throws InvalidDataException
+     * @throws Exception|InvalidDataException
      */
     public static function getValidJsonObj($jsonString)
     {

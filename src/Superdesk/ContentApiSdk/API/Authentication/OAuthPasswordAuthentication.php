@@ -15,8 +15,10 @@
 namespace Superdesk\ContentApiSdk\API\Authentication;
 
 use Superdesk\ContentApiSdk\API\Request\RequestInterface;
+use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Exception\AuthenticationException;
 use Superdesk\ContentApiSdk\Exception\ClientException;
+use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 
 class OAuthPasswordAuthentication extends AbstractAuthentication
 {
@@ -99,21 +101,22 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
                     'client_id' => $this->getClientId(),
                     'grant_type' => self::REFRESH_GRANT_TYPE,
                     'username' => $this->getUsername(),
-                    'refresh_token' => $this->refresh_token
+                    'refresh_token' => $this->refreshToken
                 )
             );
         } catch (ClientException $e) {
             throw new AuthenticationException('Could not refresh access token.', $e->getCode(), $e);
         }
 
-        $responseObj = json_decode($response);
-        if (is_null($jsonObj) || json_last_error() !== JSON_ERROR_NONE) {
-            throw new AuthenticationException('Authentication response body is not (valid) json.', json_last_error());
+        try {
+            $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
+        } catch(InvalidDataException $e) {
+            throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
         }
 
-        if ($responseObj->access_token && $responseObj->refresh_token) {
-            $this->access_token = $responseObj->access_token;
-            $this->refresh_token = $responseObj->refresh_token;
+        if (property_exists($responseObj, 'access_token') && property_exists($responseObj, 'refresh_token')) {
+            $this->accessToken = $responseObj->access_token;
+            $this->refreshToken = $responseObj->refresh_token;
 
             return true;
         }
@@ -143,9 +146,10 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
             throw new AuthenticationException('Could not request access token.', $e->getCode(), $e);
         }
 
-        $responseObj = json_decode($response['body']);
-        if (is_null($responseObj) || json_last_error() !== JSON_ERROR_NONE) {
-            throw new AuthenticationException('Authentication response body is not (valid) json.', json_last_error());
+        try {
+            $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
+        } catch(InvalidDataException $e) {
+            throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
         }
 
         if (property_exists($responseObj, 'access_token') && property_exists($responseObj, 'refresh_token')) {

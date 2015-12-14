@@ -27,7 +27,7 @@ class RequestDecorator implements RequestInterface
     /**
      * Intialize object.
      *
-     * @param RequestInterface $wrappable
+     * @param RequestInterface $requestInterface
      */
     public function __construct(RequestInterface $requestInterface)
     {

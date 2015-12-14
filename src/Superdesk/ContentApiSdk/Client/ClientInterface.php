@@ -29,7 +29,7 @@ interface ClientInterface
      * @param  array $options Array containing options (e.g. for the request or
      *                        the underlying client)
      * @param  string $method Request method
-     * @param  string $content Request content (in case of POST, PUT, etc.)
+     * @param  string|array|null $content Request content (in case of POST, PUT, etc.)
      *
      * @return mixed[] Returns an array containing the headers (key: headers)
      *                 and the raw body (key: body) as a string

@@ -43,14 +43,9 @@ class CurlClient implements ClientInterface
             CURLOPT_RETURNTRANSFER => true,
         );
 
-        switch (strtoupper($method)) {
-            case 'POST':
-                $curlOptions[CURLOPT_POST] = true;
-                $curlOptions[CURLOPT_POSTFIELDS] = $content;
-                break;
-            default:
-            case 'GET':
-                break;
+        if (strtoupper($method) == 'POST') {
+            $curlOptions[CURLOPT_POST] = true;
+            $curlOptions[CURLOPT_POSTFIELDS] = $content;
         }
 
         $curlHandler = curl_init();

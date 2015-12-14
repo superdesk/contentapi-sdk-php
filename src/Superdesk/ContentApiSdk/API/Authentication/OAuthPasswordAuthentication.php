@@ -110,7 +110,7 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
 
         try {
             $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
-        } catch(InvalidDataException $e) {
+        } catch (InvalidDataException $e) {
             throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
         }
 
@@ -148,7 +148,7 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
 
         try {
             $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
-        } catch(InvalidDataException $e) {
+        } catch (InvalidDataException $e) {
             throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
         }
 

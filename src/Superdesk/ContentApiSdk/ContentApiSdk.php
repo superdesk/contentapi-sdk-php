@@ -58,7 +58,7 @@ class ContentApiSdk
     /**
      * Useragent string sent to the API when making requests.
      */
-    const USERAGENT = 'Content API SDK ' . self::API_VERSION;
+    const USERAGENT = 'Content API SDK v1';
 
     /**
      * A list of parameters the Content API accepts.

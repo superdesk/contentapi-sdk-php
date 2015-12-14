@@ -34,7 +34,7 @@ class ResourceAdapter implements AdapterInterface
     /**
      * API Request object.
      *
-     * @var Request
+     * @var RequestInterface
      */
     protected $request;
 

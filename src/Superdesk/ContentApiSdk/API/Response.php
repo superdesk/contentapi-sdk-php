@@ -63,7 +63,7 @@ class Response
     /**
      * List of response headers.
      *
-     * @var array
+     * @var array|null
      */
     protected $headers;
 
@@ -164,7 +164,7 @@ class Response
 
             return;
         } catch (Exception $e) {
-            // Not xml
+            // Not valid XML
         }
 
         $json = json_decode($this->rawBody);
@@ -237,9 +237,7 @@ class Response
 
                 break;
             case self::CONTENT_TYPE_XML:
-
                 // TODO: Handle proper xml output
-                // throw new \Exception('Build in XML support!');
                 break;
         }
 

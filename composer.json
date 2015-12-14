@@ -21,10 +21,10 @@
     },
     "require": {
         "php": ">=5.3",
-        "pagerfanta/pagerfanta": "1.0.3"
+        "pagerfanta/pagerfanta": "^1.0.3"
     },
     "require-dev": {
-        "phpspec/phpspec": "~2.3"
+        "phpspec/phpspec": "^2.4"
     },
     "scripts": {
     },

@@ -159,7 +159,7 @@ class Response
 
         // Try to determine content type based on body
         try {
-            $xml = new SimpleXMLElement($this->rawBody);
+            new SimpleXMLElement($this->rawBody);
             $this->contentType = self::CONTENT_TYPE_XML;
 
             return;

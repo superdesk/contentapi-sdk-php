@@ -24,16 +24,9 @@ class OAuthDecorator extends RequestDecorator
     /**
      * OAuth access token.
      *
-     * @var string
+     * @var string|null
      */
-    protected $access_token;
-
-    /**
-     * OAuth refresh token.
-     *
-     * @var string
-     */
-    protected $refresh_token;
+    protected $accessToken = null;
 
     /**
      * Get access token.
@@ -42,19 +35,19 @@ class OAuthDecorator extends RequestDecorator
      */
     public function getAccessToken()
     {
-        return $this->access_token;
+        return $this->accessToken;
     }
 
     /**
      * Set access token.
      *
-     * @param string $access_token
+     * @param string $accessToken
      *
      * @return self
      */
-    public function setAccessToken($access_token)
+    public function setAccessToken($accessToken)
     {
-        $this->access_token = $access_token;
+        $this->accessToken = $accessToken;
 
         return $this;
     }
@@ -64,16 +57,16 @@ class OAuthDecorator extends RequestDecorator
      *
      * @return self
      *
-     * @throws RequestException When access_token is not set
+     * @throws RequestException When accessToken is not set
      */
     public function addAuthentication()
     {
-        if ($this->access_token == null) {
-            throw new RequestException('Property access_token should be set.');
+        if ($this->accessToken === null) {
+            throw new RequestException('Property accessToken should be set.');
         }
 
         $headers = $this->decoratedRequest->getHeaders();
-        $headers['Authorization'] = sprintf('%s %s', 'OAuth2', $this->access_token);
+        $headers['Authorization'] = sprintf('%s %s', 'OAuth2', $this->accessToken);
         $this->decoratedRequest->setHeaders($headers);
 
         return $this;

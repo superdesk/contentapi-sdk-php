@@ -102,7 +102,7 @@ class CurlClient implements ClientInterface
                 $key = $h[0];
             } else {
                 if (substr($h[0], 0, 1) == "\t") {
-                    $headers[$key] .= "\r\n\t".trim($h[0]);
+                    $headers[$key] .= "\r\n\t" . trim($h[0]);
                 } elseif (!$key) {
                     $headers[0] = trim($h[0]);
                 }

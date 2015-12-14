@@ -14,20 +14,33 @@
 
 namespace Superdesk\ContentApiSdk\Client;
 
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
-use Superdesk\ContentApiSdk\API\Response;
+use Superdesk\ContentApiSdk\Exception\ClientException;
 
 /**
- * Interface for clients.
+ * Interface for basic http clients.
  */
 interface ClientInterface
 {
     /**
-     * Makes a call to the public api and returns a response.
+     * Makes a generic HTTP call.
      *
-     * @param  RequestInterface $request
+     * @param  string $url Url to send the request to
+     * @param  array $headers Array containing request headers
+     * @param  array $options Array containing options (e.g. for the request or
+     *                        the underlying client)
+     * @param  string $method Request method
+     * @param  string $content Request content (in case of POST, PUT, etc.)
      *
-     * @return Response
+     * @return mixed[] Returns an array containing the headers (key: headers)
+     *                 and the raw body (key: body) as a string
+     *
+     * @throws ClientException When the returned response is identical to false
      */
-    public function makeApiCall(RequestInterface $request);
+    public function makeCall(
+        $url,
+        array $headers = array(),
+        array $options = array(),
+        $method = 'GET',
+        $content = null
+    );
 }

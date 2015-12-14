@@ -16,7 +16,7 @@ namespace spec\Superdesk\ContentApiSdk\API\Pagerfanta;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\Client\ClientInterface;
+use Superdesk\ContentApiSdk\Client\ApiClientInterface;
 use Superdesk\ContentApiSdk\API\Request\RequestInterface;
 use Superdesk\ContentApiSdk\API\Request\PaginationDecorator;
 use Superdesk\ContentApiSdk\API\Response;
@@ -28,7 +28,7 @@ class ResourceAdapterSpec extends ObjectBehavior
         $this->shouldHaveType('Superdesk\ContentApiSdk\API\Pagerfanta\ResourceAdapter');
     }
 
-    function let(ClientInterface $client, RequestInterface $request)
+    function let(ApiClientInterface $client, RequestInterface $request)
     {
         $this->beConstructedWith($client, $request);
     }

@@ -20,6 +20,7 @@ class RequestExceptionSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\Exception\RequestException');
+        $this->shouldHaveType('\Superdesk\ContentApiSdk\Exception\RequestException');
+        $this->shouldBeAnInstanceOf('\Superdesk\ContentApiSdk\Exception\ContentApiException');
     }
 }

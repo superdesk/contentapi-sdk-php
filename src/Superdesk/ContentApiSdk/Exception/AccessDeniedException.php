@@ -12,15 +12,11 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\Exception;
+namespace Superdesk\ContentApiSdk\Exception;
 
-use PhpSpec\ObjectBehavior;
-
-class ContentApiExceptionSpec extends ObjectBehavior
+/**
+ * Exception for access denied errors.
+ */
+class AccessDeniedException extends AuthenticationException
 {
-    function it_is_initializable()
-    {
-        $this->shouldHaveType('\Superdesk\ContentApiSdk\Exception\ContentApiException');
-        $this->shouldBeAnInstanceOf('\Exception');
-    }
 }

@@ -16,7 +16,7 @@ namespace spec\Superdesk\ContentApiSdk;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\Client\ClientInterface;
+use Superdesk\ContentApiSdk\Client\ApiClientInterface;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\API\Request;
 use Superdesk\ContentApiSdk\API\Response;
@@ -28,19 +28,19 @@ class ContentApiSdkSpec extends ObjectBehavior
         $this->shouldHaveType('Superdesk\ContentApiSdk\ContentApiSdk');
     }
 
-    function let(ClientInterface $client, Request $request, Response $response)
+    function let(ApiClientInterface $client, Request $request, Response $response)
     {
         $this->beConstructedWith($client);
     }
 
-    function its_method_get_item_should_return_an_item(ClientInterface $client, Request $request)
+    function its_method_get_item_should_return_an_item(ApiClientInterface $client, Request $request)
     {
         $request = $this->getNewRequest(sprintf('%s/%s', ContentApiSdk::SUPERDESK_ENDPOINT_ITEMS, Argument::type('string')));
         $client->makeApiCall($request)->shouldBeCalled()->willReturn(new Response('{"pubstatus": "usable", "_links": {"parent": {"href": "/", "title": "home"}, "collection": {"href": "items", "title": "items"}, "self": {"href": "items/tag:example.com,0001:newsml_BRE9A607", "title": "Item"}}, "body_text": "Andromeda and Milky Way will collide in about 2 billion years", "type": "text", "language": "en", "versioncreated": "2015-03-09T16:32:23+0000", "uri": "http://api.master.dev.superdesk.org/items/tag%3Aexample.com%2C0001%3Anewsml_BRE9A607", "version": "2", "headline": "Andromeda on a collision course"}'));
         $this->getItem(Argument::type('string'))->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\Data\Item');
     }
 
-    function its_method_get_items_should_return_a_resource_collection(ClientInterface $client, Request $request)
+    function its_method_get_items_should_return_a_resource_collection(ApiClientInterface $client, Request $request)
     {
         $parameters = array('start_date' => '1970-01-01');
         $request = $this->getNewRequest(ContentApiSdk::SUPERDESK_ENDPOINT_ITEMS, $parameters);
@@ -48,14 +48,14 @@ class ContentApiSdkSpec extends ObjectBehavior
         $this->getItems($parameters)->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection');
     }
 
-    function its_method_get_package_should_return_a_package(ClientInterface $client, Request $request)
+    function its_method_get_package_should_return_a_package(ApiClientInterface $client, Request $request)
     {
         $request = $this->getNewRequest(sprintf('%s/%s', ContentApiSdk::SUPERDESK_ENDPOINT_PACKAGES, Argument::type('string')));
         $client->makeApiCall($request)->shouldBeCalled()->willReturn(new Response('{"headline": "foo bar", "version": "1", "type": "composite", "versioncreated": "2015-02-10T06:49:47+0000", "_links": {"parent": {"title": "home", "href": "/"}, "collection": {"title": "packages", "href": "packages"}, "self": {"title": "Package", "href": "packages/tag:example.com,0001:newsml_BRE9A606"}}, "pubstatus": "usable", "language": "en", "uri": "http://api.master.dev.superdesk.org/packages/tag%3Aexample.com%2C0001%3Anewsml_BRE9A606"}'));
         $this->getPackage(Argument::type('string'))->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\Data\Package');
     }
 
-    function its_method_get_packges_should_return_a_resource_collection(ClientInterface $client, Request $request)
+    function its_method_get_packges_should_return_a_resource_collection(ApiClientInterface $client, Request $request)
     {
         $parameters = array('start_date' => '1970-01-01');
         $request = $this->getNewRequest(ContentApiSdk::SUPERDESK_ENDPOINT_PACKAGES, $parameters);

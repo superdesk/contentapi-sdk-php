@@ -16,11 +16,11 @@ namespace spec\Superdesk\ContentApiSdk\Exception;
 
 use PhpSpec\ObjectBehavior;
 
-class ContentApiExceptionSpec extends ObjectBehavior
+class AccessDeniedExceptionSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('\Superdesk\ContentApiSdk\Exception\ContentApiException');
-        $this->shouldBeAnInstanceOf('\Exception');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Exception\AccessDeniedException');
+        $this->shouldBeAnInstanceOf('Superdesk\ContentApiSdk\Exception\AuthenticationException');
     }
 }

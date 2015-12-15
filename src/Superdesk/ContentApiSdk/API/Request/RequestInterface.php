@@ -17,6 +17,22 @@ namespace Superdesk\ContentApiSdk\Api\Request;
 interface RequestInterface
 {
     /**
+     * Get protocl.
+     *
+     * @return string
+     */
+    public function getProtocol();
+
+    /**
+     * Set protocol
+     *
+     * @param string $protocol
+     *
+     * @return self
+     */
+    public function setProtocol($protocol);
+
+    /**
      * Get host.
      *
      * @return string

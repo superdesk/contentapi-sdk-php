@@ -37,6 +37,24 @@ class RequestDecorator implements RequestInterface
     /**
      * {@inheritdoc}
      */
+    public function getProtocol()
+    {
+        return $this->decoratedRequest->getProtocol();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setProtocol($protocol)
+    {
+        $this->decoratedRequest->setProtocol($protocol);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getHost()
     {
         return $this->decoratedRequest->getHost();

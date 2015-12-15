@@ -35,5 +35,9 @@ class VersionDecoratorSpec extends ObjectBehavior
         $this->setUri('request/uri');
         $this->addVersion();
         $this->getUri()->shouldReturn('v1/request/uri');
+
+        $this->setUri('/request/uri');
+        $this->addVersion();
+        $this->getUri()->shouldReturn('v1/request/uri');
     }
 }

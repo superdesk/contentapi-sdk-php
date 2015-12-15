@@ -33,6 +33,33 @@ class ContentApiSdkSpec extends ObjectBehavior
         $this->beConstructedWith($client);
     }
 
+    function it_should_set_and_get_a_protocol()
+    {
+        $protocol = 'some protocol';
+        $this->setProtocol($protocol);
+        $this->getProtocol()->shouldReturn($protocol);
+    }
+
+    function it_should_set_and_get_a_port()
+    {
+        $port = 123456789;
+        $this->setPort($port);
+        $this->getPort()->shouldReturn($port);
+    }
+
+    function it_should_set_and_get_a_host()
+    {
+        $host = 'some host';
+        $this->setHost($host);
+        $this->getHost()->shouldReturn($host);
+    }
+
+    function it_should_set_and_get_a_client(ApiClientInterface $client)
+    {
+        $this->setClient($client);
+        $this->getClient()->shouldReturn($client);
+    }
+
     function its_method_get_item_should_return_an_item(ApiClientInterface $client, Request $request)
     {
         $request = $this->getNewRequest(sprintf('%s/%s', ContentApiSdk::SUPERDESK_ENDPOINT_ITEMS, Argument::type('string')));

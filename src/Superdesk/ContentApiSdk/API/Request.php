@@ -104,9 +104,15 @@ class Request implements RequestInterface
      * @param string $uri Request uri
      * @param mixed[] $parameters Parameters
      * @param int $port Port
+     * @param string $protocol Protocol
      */
-    public function __construct($hostname = null, $uri = null, array $parameters = null, $port = null)
-    {
+    public function __construct(
+        $hostname = null,
+        $uri = null,
+        array $parameters = null,
+        $port = null,
+        $protocol = null
+    ) {
         if (is_string($hostname) && !empty($hostname)) {
             $this->setHost($hostname);
         }
@@ -119,6 +125,31 @@ class Request implements RequestInterface
         if (is_int($port)) {
             $this->setPort($port);
         }
+        if (is_string($protocol) && !empty($protocol)) {
+            $this->setProtocol($protocol);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getProtocol()
+    {
+        return $this->protocol;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setProtocol($protocol)
+    {
+        if ($protocol !== 'http' && $protocol !== 'https') {
+            throw new InvalidArgumentException('Property protocol can only have the values "http" or "https".');
+        }
+
+        $this->protocol = $protocol;
+
+        return $this;
     }
 
     /**
@@ -134,6 +165,10 @@ class Request implements RequestInterface
      */
     public function setHost($host)
     {
+        if ($host === null || !is_string($host) || empty($host)) {
+            throw new InvalidArgumentException('Property host should be of type string and cannot be empty.');
+        }
+
         $this->host = $host;
 
         return $this;
@@ -152,6 +187,10 @@ class Request implements RequestInterface
      */
     public function setPort($port)
     {
+        if (!is_int($port)) {
+            throw new InvalidArgumentException('Property port should be of type integer.');
+        }
+
         $this->port = $port;
 
         return $this;

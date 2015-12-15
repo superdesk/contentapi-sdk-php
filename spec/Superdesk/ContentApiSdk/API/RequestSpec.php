@@ -30,6 +30,74 @@ class RequestSpec extends ObjectBehavior
         $this->beConstructedWith('example.com', '/request/uri', array('start_date' => '1970-01-01'), 80);
     }
 
+    function it_should_set_and_get_a_protocol()
+    {
+        $protocol = 'http';
+        $this->setProtocol($protocol);
+        $this->getProtocol()->shouldReturn($protocol);
+
+        $protocol = 'https';
+        $this->setProtocol($protocol);
+        $this->getProtocol()->shouldReturn($protocol);
+    }
+
+    function its_method_set_protocol_should_throw_an_exception_on_invalid_protocol_value()
+    {
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetProtocol('some protocol');
+    }
+
+    function it_should_set_and_get_a_host()
+    {
+        $host = 'some host';
+        $this->setHost($host);
+        $this->getHost()->shouldReturn($host);
+    }
+
+    function its_method_set_host_should_throw_an_exception_on_invalid_host_value()
+    {
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetHost(Argument::is(''));
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetHost(Argument::is(null));
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetHost(Argument::type('array'));
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetHost(Argument::type('int'));
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetPort(Argument::type('object'));
+    }
+
+    function it_should_set_and_get_a_port()
+    {
+        $port = 80;
+        $this->setPort($port);
+        $this->getPort()->shouldReturn($port);
+    }
+
+    function its_method_set_port_should_throw_an_exception_on_invalid_port_value()
+    {
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetPort(Argument::is(null));
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetPort(Argument::type('string'));
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetPort(Argument::type('array'));
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetPort(Argument::type('object'));
+    }
+
+    function it_should_set_and_get_a_uri()
+    {
+        $uri = 'request/uri';
+        $this->setUri($uri);
+        $this->getUri()->shouldReturn($uri);
+    }
+
+    function it_should_set_and_get_headers()
+    {
+        $headers = array('some key' => 'some value');
+        $this->setHeaders($headers);
+        $this->getHeaders()->shouldReturn($headers);
+    }
+
+    function it_should_set_and_get_options()
+    {
+        $options = array('some key' => 'some value');
+        $this->setOptions($options);
+        $this->getOptions()->shouldReturn($options);
+    }
+
     function it_should_return_a_base_url()
     {
         $this->getBaseUrl()->shouldBe('https://example.com:80');

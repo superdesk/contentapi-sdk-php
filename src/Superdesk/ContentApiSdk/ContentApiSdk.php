@@ -68,16 +68,23 @@ class ContentApiSdk
     protected $client;
 
     /**
-     * Hostname of the api instance
+     * Protocol to reach the api instance.
      *
-     * @var string
+     * @var string|null
      */
-    protected $host;
+    protected $protocol = null;
 
     /**
-     * Port of the api instalce
+     * Hostname of the api instance.
      *
-     * @var int
+     * @var string|null
+     */
+    protected $host = null;
+
+    /**
+     * Port of the api instance.
+     *
+     * @var int|null
      */
     protected $port = null;
 
@@ -94,9 +101,14 @@ class ContentApiSdk
      * @param ApiClientInterface $client
      * @param string|null $host
      * @param int|null $port
+     * @param string|null $protocol
      */
-    public function __construct(ApiClientInterface $client, $host = null, $port = null)
-    {
+    public function __construct(
+        ApiClientInterface $client,
+        $host = null,
+        $port = null,
+        $protocol = null
+    ) {
         $this->client = $client;
 
         if (!is_null($host)) {
@@ -105,6 +117,10 @@ class ContentApiSdk
 
         if (!is_null($port)) {
             $this->setPort($port);
+        }
+
+        if (!is_null($protocol)) {
+            $this->setProtocol($protocol);
         }
     }
 
@@ -135,7 +151,7 @@ class ContentApiSdk
     /**
      * Gets the value of apiHost.
      *
-     * @return string
+     * @return string|null
      */
     public function getHost()
     {
@@ -145,16 +161,12 @@ class ContentApiSdk
     /**
      * Sets the value of host.
      *
-     * @param string $host Value to set
+     * @param string|null $host Value to set
      *
      * @return self
      */
     public function setHost($host)
     {
-        if (!is_string($host)) {
-            throw new ContentApiException('The property host should be of type integer.');
-        }
-
         $this->host = $host;
 
         return $this;
@@ -163,7 +175,7 @@ class ContentApiSdk
     /**
      * Gets the value of port.
      *
-     * @return int
+     * @return int|null
      */
     public function getPort()
     {
@@ -173,17 +185,37 @@ class ContentApiSdk
     /**
      * Sets the value of port.
      *
-     * @param int $port Value to set
+     * @param int|null $port Value to set
      *
      * @return self
      */
     public function setPort($port)
     {
-        if (!is_int($port)) {
-            throw new ContentApiException('The property port should be of type integer.');
-        }
-
         $this->port = $port;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of protocol.
+     *
+     * @return string|null
+     */
+    public function getProtocol()
+    {
+        return $this->protocol;
+    }
+
+    /**
+     * Sets the value of protocol.
+     *
+     * @param string|null $protocol Value to set
+     *
+     * @return self
+     */
+    public function setProtocol($protocol)
+    {
+        $this->protocol = $protocol;
 
         return $this;
     }
@@ -357,9 +389,13 @@ class ContentApiSdk
      */
     public function getNewRequest($uri, array $parameters = array())
     {
-        $request = new Request($this->host, $uri, $parameters, $this->port);
-        $versionedRequest = new VersionDecorator($request);
-        $versionedRequest->addVersion();
+        try {
+            $request = new Request($this->host, $uri, $parameters, $this->port, $this->protocol);
+            $versionedRequest = new VersionDecorator($request);
+            $versionedRequest->addVersion();
+        } catch (ContentApiException $e) {
+            throw new ContentApiException($e->getMessage(), $e->getCode(), $e);
+        }
 
         return $versionedRequest;
     }

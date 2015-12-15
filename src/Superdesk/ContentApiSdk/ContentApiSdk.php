@@ -244,10 +244,12 @@ class ContentApiSdk
      * Get multiple items based on a filter.
      *
      * @param array $params Filter parameters
+     * @param int $page Page to return
+     * @param int $maxResults Maximum amount of packages a page
      *
      * @return ResourceCollection
      */
-    public function getItems($params)
+    public function getItems($params, $page = 1, $maxResults = 25)
     {
         $itemCollection = new ResourceCollection(
             new ItemAdapter(
@@ -255,9 +257,6 @@ class ContentApiSdk
                 $this->getNewRequest(self::SUPERDESK_ENDPOINT_ITEMS, $params)
             )
         );
-
-        $page = (isset($params['page'])) ? $params['page'] : 1;
-        $maxResults = (isset($params['max_results'])) ? $params['max_results'] : 25;
 
         $itemCollection->setCurrentPage($page);
         $itemCollection->setMaxPerPage($maxResults);
@@ -296,11 +295,17 @@ class ContentApiSdk
      * @param array $params Filter parameters
      * @param bool  $resolveAssociations Inject full associations recursively
      *                                   instead of references by uri.
+     * @param int $page Page to return
+     * @param int $maxResults Maximum amount of packages a page
      *
      * @return ResourceCollection
      */
-    public function getPackages($params, $resolveAssociations = false)
-    {
+    public function getPackages(
+        $params,
+        $resolveAssociations = false,
+        $page = 1,
+        $maxResults = 25
+    ) {
         $packageCollection = new ResourceCollection(
             new PackageAdapter(
                 $this->client,
@@ -309,10 +314,6 @@ class ContentApiSdk
                 $resolveAssociations
             )
         );
-
-        // TODO: Check if we actually need these 5 lines of code
-        $page = (isset($params['page'])) ? $params['page'] : 1;
-        $maxResults = (isset($params['max_results'])) ? $params['max_results'] : 25;
 
         $packageCollection->setCurrentPage($page);
         $packageCollection->setMaxPerPage($maxResults);

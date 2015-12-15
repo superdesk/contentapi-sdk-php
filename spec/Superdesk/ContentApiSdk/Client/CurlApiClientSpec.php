@@ -81,10 +81,10 @@ class CurlApiClientSpec extends ObjectBehavior
         $this->shouldThrow(new AccessDeniedException('Authentication retry limit reached.'))->duringMakeApiCall($request);
     }
 
-    function it_should_get_a_new_access_token_when_access_token_is_set_but_a_401_is_returned($client, $authentication, $request)
+    function it_should_refresh_a_token_when_access_token_is_set_but_a_401_is_returned($client, $authentication, $request)
     {
         $authentication->getAccessToken()->shouldBeCalled()->willReturn('some_access_token');
-        $authentication->getAuthenticationTokens()->shouldBeCalled()->willReturn(true);
+        $authentication->refreshAccessToken()->shouldBeCalled()->willReturn(true);
         $client->makeCall(
             $request->getWrappedObject()->getFullUrl(),
             $request->getWrappedObject()->getHeaders(),

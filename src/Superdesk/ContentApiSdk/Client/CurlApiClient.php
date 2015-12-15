@@ -45,6 +45,7 @@ class CurlApiClient extends AbstractApiClient
     {
         $response = null;
 
+        // TODO: Add oauth decorator if access token isset
         if ($this->authenticator->getAccessToken() !== null) {
             $authenticatedRequest = new OAuthDecorator($request);
             $authenticatedRequest->setAccessToken($this->authenticator->getAccessToken());
@@ -77,7 +78,11 @@ class CurlApiClient extends AbstractApiClient
 
             try {
                 $this->authenticator->setBaseUrl($request->getBaseUrl());
-                $this->authenticator->getAuthenticationTokens();
+                if ($this->authenticator->getAccessToken() !== null) {
+                    $this->authenticator->refreshAccessToken();
+                } else {
+                    $this->authenticator->getAuthenticationTokens();
+                }
 
                 // Reexecute event
                 return $this->makeApiCall($request);

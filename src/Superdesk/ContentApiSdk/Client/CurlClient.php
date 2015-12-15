@@ -35,7 +35,7 @@ class CurlClient implements ClientInterface
     ) {
         $curlOptions = array(
             CURLOPT_URL => $url,
-            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_HTTPHEADER => $this->processRequestHeaders($headers),
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HEADER => true,
             CURLOPT_TIMEOUT => 30,
@@ -110,5 +110,31 @@ class CurlClient implements ClientInterface
         }
 
         return $headers;
+    }
+
+    /**
+     * Convert headers in key => value format, to cURL accepted header format.
+     *
+     * @param  string[] $headers Headers in key => value format, if key is
+     *                           numeric only the value will be stored in the
+     *                           new array.
+     *
+     * @return string[]
+     */
+    private function processRequestHeaders(array $headers)
+    {
+        $curlHeaders = array();
+
+        foreach ($headers as $name => $value) {
+            if (!is_numeric($name)) {
+                $header = sprintf('%s: %s', $name, $value);
+            } else {
+                $header = $value;
+            }
+
+            $curlHeaders[] = $header;
+        }
+
+        return $curlHeaders;
     }
 }

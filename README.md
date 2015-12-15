@@ -21,19 +21,26 @@ the following PHP extensions:
 ### Composer
 * Require the SDK as a composer dependency 
 
-```php composer.phar require superdesk/contentapi-sdk-php```
+```bash
+$ php composer.phar require superdesk/contentapi-sdk-php
+```
 
 ### Manual
 * Download a copy of the SDK
 * Add the classes to your autoloader
 
 ## Customization
-You can use your own client classes instead of CurlClient and CurlApiClient. 
+You can use your own client classes instead of 
+[CurlClient](src/Superdesk/ContentApiSdk/Client/CurlClient.php) and 
+[CurlApiClient](src/Superdesk/ContentApiSdk/Client/CurlApiClient.php) files. 
 This is for example useful if your framework or project already has it's own 
 http client, you can easily incorporate that without having multiple 
 depencencies.
-All you need to do is to implement the ClientInterface and ClientApiInterface. 
-For the ClientApi class there also a useful abstract class AbstractApiClient 
+All you need to do is to implement the 
+[ClientInterface](src/Superdesk/ContentApiSdk/Client/ClientInterface.php) and 
+[ClientApiInterface](src/Superdesk/ContentApiSdk/Client/ClientApiInterface.php). 
+For the ClientApi class there also a useful abstract class 
+[AbstractApiClient](src/Superdesk/ContentApiSdk/Client/AbstractApiClient.php) 
 which contains some sane defaults.
 
 ## Examples
@@ -41,11 +48,72 @@ which contains some sane defaults.
 This example uses the [CurlClient](src/Superdesk/ContentApiSdk/Client/CurlClient.php) 
 and [CurlApiClient](src/Superdesk/ContentApiSdk/Client/CurlApiClient.php) files.
 
-You can run the example via the cli with the command:
+You can run the [example.php](sample/default-client/example.php) via the cli 
+with the command:
 
-```php sample/default-client/example.php```
+```bash
+$ php sample/default-client/example.php
+```
 
 Make sure you have the extenions _cURL_ and _Multibyte String_ enabled and 
 you've installed the vendors.
 
-```php composer.phar install --no-dev```
+```bash
+$ php composer.phar install --no-dev
+```
+
+### Samples
+
+#### Authentication
+
+OAuth username and password authentication. The 
+[CurlApiClient](src/Superdesk/ContentApiSdk/Client/CurlApiClient.php) 
+will automatically try to retrieve new access token if the previous token has
+been invalited.
+
+
+```php
+<?php
+
+use Superdesk\ContentApiSdk\ContentApiSdk;
+use Superdesk\ContentApiSdk\Client\CurlClient;
+use Superdesk\ContentApiSdk\Client\CurlApiClient;
+use Superdesk\ContentApiSdk\API\Authentication\OAuthPasswordAuthentication;
+
+$genericClient = new CurlClient();
+$authentication = new OAuthPasswordAuthentication($genericClient);
+$authentication
+    ->setClientId(API_CLIENT_ID)
+    ->setUsername(API_USERNAME)
+    ->setPassword(API_PASSWORD);
+$apiClient = new CurlApiClient($genericClient, $authentication);
+$contentApi = new ContentApiSdk($apiClient, API_HOST, API_PORT, API_PROTOCOL);
+
+?>
+```
+
+#### Pagination and traversing through results
+
+We use [Pagerfanta](https://github.com/whiteoctober/Pagerfanta) as a pagination
+library. All results returned from the methods _getItems(...)_ and 
+_getPackages(...)_ are actually Pagerfanta instances. That should make it easy
+enough to traverse through your API results and also built in your own pagination.
+
+```php
+<?php
+
+use Superdesk\ContentApiSdk\ContentApiSdk;
+
+$contentApi = new ContentApiSdk(...);
+
+$maxPerPage = 1;
+$startPage = 1;
+
+$items = $contentApi->getItems(array(), $startPage, $maxPerPage);
+
+$items->getNbResults(); // Total items
+$items->getMaxPerPage(); // Max results per age == $maxPerPage
+$items->getNbPages(); // Total pages
+
+?>
+```

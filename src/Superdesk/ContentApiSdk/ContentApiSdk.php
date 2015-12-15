@@ -15,7 +15,6 @@
 namespace Superdesk\ContentApiSdk;
 
 use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\API\Request\VersionDecorator;
 use Superdesk\ContentApiSdk\API\Response;
 use Superdesk\ContentApiSdk\API\Pagerfanta\ItemAdapter;
 use Superdesk\ContentApiSdk\API\Pagerfanta\PackageAdapter;
@@ -391,13 +390,11 @@ class ContentApiSdk
     {
         try {
             $request = new Request($this->host, $uri, $parameters, $this->port, $this->protocol);
-            $versionedRequest = new VersionDecorator($request);
-            $versionedRequest->addVersion();
         } catch (ContentApiException $e) {
             throw new ContentApiException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return $versionedRequest;
+        return $request;
     }
 
     /**

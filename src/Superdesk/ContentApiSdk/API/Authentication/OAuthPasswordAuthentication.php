@@ -89,6 +89,44 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
     /**
      * {@inheritdoc}
      */
+    public function refreshAccessToken()
+    {
+        try {
+            $response = $this->client->makeCall(
+                $this->getAuthenticationUrl(),
+                array(),
+                array(),
+                'POST',
+                array(
+                    'client_id' => $this->getClientId(),
+                    'grant_type' => self::REFRESH_GRANT_TYPE,
+                    'username' => $this->getUsername(),
+                    'refresh_token' => $this->refreshToken
+                )
+            );
+        } catch (ClientException $e) {
+            throw new AuthenticationException('Could not refresh access token.', $e->getCode(), $e);
+        }
+
+        try {
+            $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
+        } catch (InvalidDataException $e) {
+            throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
+        }
+
+        if (property_exists($responseObj, 'access_token') && property_exists($responseObj, 'refresh_token')) {
+            $this->accessToken = $responseObj->access_token;
+            $this->refreshToken = $responseObj->refresh_token;
+
+            return true;
+        }
+
+        throw new AuthenticationException('The server returned an unexpected response body.');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getAuthenticationTokens()
     {
         try {
@@ -114,8 +152,9 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
             throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
         }
 
-        if (property_exists($responseObj, 'access_token')) {
+        if (property_exists($responseObj, 'access_token') && property_exists($responseObj, 'refresh_token')) {
             $this->accessToken = $responseObj->access_token;
+            $this->refreshToken = $responseObj->refresh_token;
 
             return true;
         }

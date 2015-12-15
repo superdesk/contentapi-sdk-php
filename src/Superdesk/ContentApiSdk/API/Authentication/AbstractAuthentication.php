@@ -24,6 +24,11 @@ abstract class AbstractAuthentication implements AuthenticationInterface
     const AUTHENTICATION_URI = 'oauth/token';
 
     /**
+     * Refresh token grant type.
+     */
+    const REFRESH_GRANT_TYPE = 'refresh_token';
+
+    /**
      * HTTP Client for making authentication requests.
      *
      * @var ClientInterface
@@ -36,6 +41,13 @@ abstract class AbstractAuthentication implements AuthenticationInterface
      * @var string
      */
     protected $accessToken;
+
+    /**
+     * Refresh token to referesh the access token.
+     *
+     * @var string
+     */
+    protected $refreshToken;
 
     /**
      * Client ID for the API.

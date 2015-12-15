@@ -308,19 +308,15 @@ class ContentApiSdk
                 foreach ($associationGroupItems AS $associatedName => $associatedItem) {
                     $associatedId = $this->getIdFromUri($associatedItem->uri);
 
-                    if ($associatedItem->type == self::PACKAGE_TYPE_COMPOSITE) {
-                        try {
+                    try {
+                        if ($associatedItem->type == self::PACKAGE_TYPE_COMPOSITE) {
                             $associatedObj = $this->getPackage($associatedId, true);
-                        } catch (ContentApiException $e) {
-                            // If subrequests fail, dont fail main request
-                        }
-                    } else {
-                        try {
+                        } else {
                             $associatedObj = $this->getItem($associatedId);
                             $associatedObj->type = $associatedItem->type;
-                        } catch (ContentApiException $e) {
-                            // If subrequests fail, dont fail main request
                         }
+                    } catch (ContentApiException $e) {
+                        // If subrequests fail, dont fail main request
                     }
 
                     $groupAssociations->$associatedName = $associatedObj;

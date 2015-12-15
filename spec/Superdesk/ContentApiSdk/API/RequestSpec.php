@@ -44,15 +44,132 @@ class RequestSpec extends ObjectBehavior
     {
         $parameters = array('some_key' => 'some value', 'start_date' => '1970-01-01');
 
-        $this->enableParameterValidation();
+        $this->enableParameterCleaning();
         $this->setParameters($parameters)->getParameters()->shouldBe(array('start_date' => '1970-01-01'));
 
-        $this->disableParameterValidation();
+        $this->disableParameterCleaning();
         $this->setParameters($parameters)->getParameters()->shouldBe($parameters);
     }
 
     function its_method_set_parameters_should_throw_an_exception()
     {
         $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\RequestException')->duringSetParameters(array('start_date' => array()), true);
+    }
+
+    function its_method_process_parameters_should_properly_process()
+    {
+        $parameters = array('start_date' => '2015-01-01');
+        $this->processParameters($parameters)->shouldBe($parameters);
+        $parameters = array('start_date' => new \DateTime());
+        $this->processParameters($parameters)
+            ->shouldBe(array(
+                'start_date' => $parameters['start_date']->format('Y-m-d')
+            ));
+
+        $parameters = array('end_date' => '2015-01-01');
+        $this->processParameters($parameters)->shouldBe($parameters);
+        $parameters = array('end_date' => new \DateTime());
+        $this->processParameters($parameters)
+            ->shouldBe(array(
+                'end_date' => $parameters['end_date']->format('Y-m-d')
+            ));
+
+        $parameters = array('q' => 'test');
+        $this->processParameters($parameters)->shouldBe($parameters);
+
+        $parameters = array('include_fields' => 'headline,body_text');
+        $this->processParameters($parameters)->shouldBe($parameters);
+        $this->processParameters(array(
+                'include_fields' => array('headline', 'body_text')
+            ))
+            ->shouldBe(array(
+                'include_fields' => 'headline,body_text'
+            ));
+
+        $parameters = array('exclude_fields' => 'headline,body_text');
+        $this->processParameters($parameters)->shouldBe($parameters);
+        $this->processParameters(array(
+                'exclude_fields' => array('headline', 'body_text')
+            ))
+            ->shouldBe(array(
+                'exclude_fields' => 'headline,body_text'
+            ));
+
+        $parameters = array('page' => 2);
+        $this->processParameters($parameters)->shouldBe($parameters);
+        $this->processParameters(array(
+                'page' => '2'
+            ))
+            ->shouldBe(array(
+                'page' => 2
+            ));
+
+        $parameters = array('max_results' => 2);
+        $this->processParameters($parameters)->shouldBe($parameters);
+        $this->processParameters(array(
+                'max_results' => '2'
+            ))
+            ->shouldBe(array(
+                'max_results' => 2
+            ));
+    }
+
+    function its_method_process_parameters_should_throw_exceptions()
+    {
+        $parameters = array(
+            'start_date' => array(),
+        );
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringProcessParameters($parameters);
+
+        $parameters = array(
+            'start_date' => '01-01-1970',
+        );
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringProcessParameters($parameters);
+
+        $parameters = array(
+            'end_date' => array(),
+        );
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringProcessParameters($parameters);
+
+        $parameters = array(
+            'end_date' => '01-01-1970',
+        );
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringProcessParameters($parameters);
+
+        $parameters = array(
+            'q' => array(),
+        );
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringProcessParameters($parameters);
+
+        $parameters = array(
+            'include_fields' => 1,
+        );
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringProcessParameters($parameters);
+
+        $parameters = array(
+            'exclude_fields' => 1,
+        );
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringProcessParameters($parameters);
+
+        $parameters = array(
+            'page' => 'page',
+        );
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringProcessParameters($parameters);
+
+        $parameters = array(
+            'max_results' => 'max_results',
+        );
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringProcessParameters($parameters);
+    }
+
+    function its_method_process_parameters_should_validate()
+    {
+        $invalidParameters = array(
+            'some_name' => 'some value',
+            'another_name' => 'another value',
+            'max_results' => '5'
+        );
+        $processedParameters = $this->processParameters($invalidParameters, true);
+        $processedParameters->shouldBe(array('max_results' => 5));
     }
 }

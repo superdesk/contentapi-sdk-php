@@ -115,25 +115,25 @@ interface RequestInterface
     public function setOptions(array $options);
 
     /**
-     * Get parameter validation status.
+     * Get parameter cleaning status.
      *
      * @return boolean
      */
-    public function getParameterValidation();
+    public function getCleanParameters();
 
     /**
-     * Enables parameter validation.
+     * Enables cleaning of invalid parameters before being sent to the API.
      *
      * @return self
      */
-    public function enableParameterValidation();
+    public function enableParameterCleaning();
 
     /**
-     * Disables parameter validation.
+     * Disables cleaning of invalid parameters before being sent to the API.
      *
      * @return self
      */
-    public function disableParameterValidation();
+    public function disableParameterCleaning();
 
     /**
      * Get base url.

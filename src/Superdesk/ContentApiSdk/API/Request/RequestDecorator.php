@@ -109,17 +109,17 @@ class RequestDecorator implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getParameterValidation()
+    public function getCleanParameters()
     {
-        return $this->decoratedRequest->getParameterValidation();
+        return $this->decoratedRequest->getCleanParameters();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function enableParameterValidation()
+    public function enableParameterCleaning()
     {
-        $this->decoratedRequest->enableParameterValidation();
+        $this->decoratedRequest->enableParameterCleaning();
 
         return $this;
     }
@@ -127,9 +127,9 @@ class RequestDecorator implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function disableParameterValidation()
+    public function disableParameterCleaning()
     {
-        $this->decoratedRequest->disableParameterValidation();
+        $this->decoratedRequest->disableParameterCleaning();
 
         return $this;
     }

@@ -62,11 +62,26 @@ class Request implements RequestInterface
     protected $parameters = array();
 
     /**
-     * Validate parameters, unset invalid ones.
+     * Boolean for status of parameter handling. When set to true invalid
+     * parameters will be cleaned out before being sent to the API.
      *
      * @var boolean
      */
-    protected $parameterValidation = true;
+    protected $cleanParameters = true;
+
+    /**
+     * A list of parameters the Content API accepts.
+     *
+     * For a list of accepted parameters find the variable allowed_params in
+     * the following file:
+     * https://github.com/superdesk/superdesk-content-api/blob/master/content_api/items/service.py
+     *
+     * @var string[]
+     */
+    protected $validParameters = array(
+        'start_date', 'end_date', 'q', 'max_results', 'page',
+        'include_fields', 'exclude_fields'
+    );
 
     /**
      * Request headers.
@@ -174,8 +189,7 @@ class Request implements RequestInterface
     public function setParameters(array $parameters)
     {
         try {
-            // TODO: Maybe we should move the parameter validation to this class?
-            $this->parameters = ContentApiSdk::processParameters($parameters, $this->parameterValidation);
+            $this->parameters = $this->processParameters($parameters, $this->cleanParameters);
         } catch (InvalidArgumentException $e) {
             throw new RequestException($e->getMessage(), $e->getCode(), $e);
         }
@@ -186,17 +200,17 @@ class Request implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function getParameterValidation()
+    public function getCleanParameters()
     {
-        return $this->parameterValidation;
+        return $this->cleanParameters;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function enableParameterValidation()
+    public function enableParameterCleaning()
     {
-        $this->parameterValidation = true;
+        $this->cleanParameters = true;
 
         return $this;
     }
@@ -204,9 +218,11 @@ class Request implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function disableParameterValidation()
+    public function disableParameterCleaning()
     {
-        $this->parameterValidation = false;
+        $this->cleanParameters = false;
+
+        return $this;
     }
 
     /**
@@ -259,5 +275,71 @@ class Request implements RequestInterface
     public function getFullUrl()
     {
         return sprintf('%s/%s?%s', $this->getBaseUrl(), trim($this->uri, '/ '), http_build_query($this->parameters));
+    }
+
+    /**
+     * Type conversion method for parameters accepted by the API. Will
+     * by default automatically unset invalid parameters, this behaviour can be
+     * overridden with the second argument.
+     *
+     * @param  mixed[] $requestParameters Array of parameters
+     * @param  boolean $unsetInvalidParameters Boolean to clean out invalid
+     *                                         parameters
+     *
+     * @return mixed[] Returns an array of parameters with API safe types
+     * @throws InvalidArgumentException When an invalid type is set for a
+     *                                  valid parameter
+     */
+    public function processParameters(
+        array $requestParameters,
+        $unsetInvalidParameters = true
+    ) {
+        $processedParameters = $requestParameters;
+
+        foreach ($requestParameters as $name => $value) {
+
+            if ($unsetInvalidParameters && !in_array($name, $this->validParameters)) {
+                unset($processedParameters[$name]);
+                continue;
+            }
+
+            switch ($name) {
+                case 'start_date':
+                case 'end_date':
+                        if (!is_string($value) && !($value instanceof \DateTime)) {
+                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string or DateTime.', $name));
+                        } elseif ($value instanceof \DateTime) {
+                            $value = $value->format('Y-m-d');
+                        } elseif (!preg_match('/\d\d\d\d\-\d\d\-\d\d/', $value)) {
+                            throw new InvalidArgumentException(sprintf('Parameter %s has invalid format, please use dddd-dd-dd.', $name));
+                        }
+                    break;
+                case 'q':
+                        if (!is_string($value)) {
+                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string.', $name));
+                        }
+                    break;
+                case 'include_fields':
+                case 'exclude_fields':
+                        if (!is_string($value) && !is_array($value)) {
+                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string or array.', $name));
+                        } elseif (is_array($value)) {
+                            $value = implode(',', $value);
+                        }
+                    break;
+                case 'page':
+                case 'max_results':
+                        if (!is_int($value) && !ctype_digit($value)) {
+                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type integer.', $name));
+                        } elseif (!is_int($value)) {
+                            $value = (int) $value;
+                        }
+                    break;
+            }
+
+            $processedParameters[$name] = $value;
+        }
+
+        return $processedParameters;
     }
 }

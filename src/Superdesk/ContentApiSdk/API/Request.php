@@ -311,7 +311,7 @@ class Request implements RequestInterface
                         } elseif ($value instanceof \DateTime) {
                             $value = $value->format('Y-m-d');
                         } elseif (!preg_match('/\d\d\d\d\-\d\d\-\d\d/', $value)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s has invalid format, please use dddd-dd-dd.', $name));
+                            throw new InvalidArgumentException(sprintf('Parameter %s has invalid format, please use yyyy-mm-dd.', $name));
                         }
                     break;
                 case 'q':

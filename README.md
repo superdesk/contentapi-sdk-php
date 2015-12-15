@@ -8,50 +8,44 @@ This is an SDK written in PHP for the Superdesk Content API.
 
 For more information about the Superdesk Content API please read the [documentation](http://docs.superdeskcontentapi.apiary.io/).
 
-#### Disclaimer
-The SDK is still in alpha version, so anything might change. Steady class names 
-and methods are not guaranteed yet.
-
 ## Installation
+
+### Requirements
+* PHP >= 5.3
+
+When using the CurlApiClient and CurlClient classes make sure you've installed
+the following PHP extensions:
+* [cURL](http://php.net/manual/book.curl.php)
+* [Multibyte String](http://php.net/manual/book.mbstring.php)
 
 ### Composer
 * Require the SDK as a composer dependency 
+
 ```php composer.phar require superdesk/contentapi-sdk-php```
 
 ### Manual
 * Download a copy of the SDK
 * Add the classes to your autoloader
 
+## Customization
+You can use your own client classes instead of CurlClient and CurlApiClient. 
+This is for example useful if your framework or project already has it's own 
+http client, you can easily incorporate that without having multiple 
+depencencies.
+All you need to do is to implement the ClientInterface and ClientApiInterface. 
+For the ClientApi class there also a useful abstract class AbstractApiClient 
+which contains some sane defaults.
+
 ## Examples
 
-Two examples are included where it shown how to use the SDK. 
-
-### Example 01
-
-This example uses the FileGetContentsClient, which is a very simple 
-file_get_contents call to the public api. Make sure that the fopen-wrappers
-are enabled. Please edit the example and fill in your Content API url.
+This example uses the [CurlClient](src/Superdesk/ContentApiSdk/Client/CurlClient.php) 
+and [CurlApiClient](src/Superdesk/ContentApiSdk/Client/CurlApiClient.php) files.
 
 You can run the example via the cli with the command:
+
 ```php sample/default-client/example.php```
 
-### Quickstart
+Make sure you have the extenions _cURL_ and _Multibyte String_ enabled and 
+you've installed the vendors.
 
-Get all items, filtering by date from the 1st of January 2015.
-
-```php
-<?php
-
-    use Superdesk\ContentApiSdk\ContentApiSdk;
-    use Superdesk\ContentApiSdk\Client\FileGetContentsClient;
-
-    $clientConfig = array(
-        'base_uri' => 'http://publicapi.example.com:5050'
-    );
-    $parameters = array('start_date' => '2015-01-01');
-
-    $contentApi = new ContentApiSdk(new FileGetContentsClient($clientConfig));
-    $items = $contentApi->getItems($parameters);
-
-    // Do something useful with your items here
-```
+```php composer.phar install --no-dev```

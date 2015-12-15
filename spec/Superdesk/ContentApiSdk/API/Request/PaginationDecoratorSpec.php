@@ -38,4 +38,19 @@ class PaginationDecoratorSpec extends ObjectBehavior
         $parameters->shouldHaveKey('page');
         $parameters->shouldHaveKeyWithValue('max_results', 10);
     }
+
+    function it_should_create_correct_page_numbers()
+    {
+        $this->addPagination(0, 10);
+        $parameters = $this->getParameters();
+        $parameters->shouldBeArray();
+        $parameters->shouldHaveKeyWithValue('page', 1);
+        $parameters->shouldHaveKeyWithValue('max_results', 10);
+
+        $this->addPagination(10, 10);
+        $parameters = $this->getParameters();
+        $parameters->shouldBeArray();
+        $parameters->shouldHaveKeyWithValue('page', 2);
+        $parameters->shouldHaveKeyWithValue('max_results', 10);
+    }
 }

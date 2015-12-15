@@ -32,7 +32,7 @@ class PaginationDecorator extends RequestDecorator
     public function addPagination($offset, $length)
     {
         $parameters = $this->getParameters();
-        $parameters['page'] = (int) ceil($offset / $length);
+        $parameters['page'] = (int) (ceil($offset / $length) + 1);
         $parameters['max_results'] = (int) $length;
         $this->setParameters($parameters);
 

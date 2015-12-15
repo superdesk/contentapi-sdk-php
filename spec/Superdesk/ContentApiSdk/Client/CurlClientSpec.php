@@ -30,7 +30,7 @@ class CurlClientSpec extends ObjectBehavior
         $response = $this->makeCall('http://httpbin.org/status/200', array());
         $response->shouldHaveKey('headers');
         $response->shouldHaveKeyWithValue('status', 200);
-        $response->shouldHaveKeyWithValue('body', false);
+        $response->shouldHaveKeyWithValue('body', '');
     }
 
     function its_method_make_call_should_set_correct_status_codes()

@@ -14,8 +14,8 @@
 
 namespace Superdesk\ContentApiSdk\API\Request;
 
-use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Exception\InvalidArgumentException;
+use Superdesk\ContentApiSdk\Exception\RequestException;
 
 /**
  * Pagination decorator for API request.

@@ -52,7 +52,7 @@ class CurlApiClient extends AbstractApiClient
 
             $response = $this->client->makeCall(
                 $authenticatedRequest->getFullUrl(),
-                $this->add_default_headers($authenticatedRequest->getHeaders()),
+                $this->addDefaultHeaders($authenticatedRequest->getHeaders()),
                 $authenticatedRequest->getOptions()
             );
 
@@ -99,7 +99,7 @@ class CurlApiClient extends AbstractApiClient
      *
      * @return array
      */
-    private function add_default_headers($headers)
+    private function addDefaultHeaders($headers)
     {
         foreach ($this->headers as $key => $value) {
             if (!isset($headers[$key])) {

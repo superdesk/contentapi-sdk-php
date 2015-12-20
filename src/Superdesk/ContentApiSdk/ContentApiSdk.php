@@ -245,16 +245,11 @@ class ContentApiSdk
      * Get multiple items based on a filter.
      *
      * @param RequestParameters $paramObj Filter parameters
-     * @param int|null $page Page to return
-     * @param int|null $maxResults Maximum amount of packages a page
      *
      * @return ResourceCollection
      */
-    public function getItems(
-        RequestParameters $paramObj,
-        $page = null,
-        $maxResults = null
-    ) {
+    public function getItems(RequestParameters $paramObj)
+    {
         $itemCollection = new ResourceCollection(
             new ItemAdapter(
                 $this->client,
@@ -296,16 +291,12 @@ class ContentApiSdk
      * @param RequestParameters $paramObj Filter parameters
      * @param bool $resolveAssociations Inject full associations recursively
      *                                  instead of references by uri.
-     * @param int|null $page Page to return
-     * @param int|null $maxResults Maximum amount of packages a page
      *
      * @return ResourceCollection
      */
     public function getPackages(
         RequestParameters $paramObj,
-        $resolveAssociations = false,
-        $page = null,
-        $maxResults = null
+        $resolveAssociations = false
     ) {
         $packageCollection = new ResourceCollection(
             new PackageAdapter(

@@ -37,7 +37,7 @@ class PaginationDecorator extends RequestDecorator
             $parameters->setPage((int) (ceil($offset / $length) + 1));
             $parameters->setMaxResults((int) $length);
             $this->setParameters($parameters);
-        } catch(InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             throw new RequestException('Could not set pagination parameters.');
         }
 

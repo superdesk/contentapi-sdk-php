@@ -105,18 +105,12 @@ class RequestParameters
      * object.
      *
      * @param string|DateTime|null $startDate
+     *
+     * @return self
      */
     public function setStartDate($startDate)
     {
-        if ($startDate !== null) {
-            try {
-                $this->startDate = $this->validateDate($startDate);
-            } catch (InvalidArgumentException $e) {
-                throw new InvalidArgumentException('Invalid value for start_date parameter.', $e->getCode(), $e);
-            }
-        } else {
-            $this->startDate = null;
-        }
+        $this->setProperty('startDate', $startDate, 'validateDate');
 
         return $this;
     }
@@ -136,18 +130,12 @@ class RequestParameters
      * object.
      *
      * @param string|DateTime|null $endDate
+     *
+     * @return self
      */
     public function setEndDate($endDate)
     {
-        if ($endDate !== null) {
-            try {
-                $this->endDate = $this->validateDate($endDate);
-            } catch (InvalidArgumentException $e) {
-                throw new InvalidArgumentException('Invalid value for end_date parameter.', $e->getCode(), $e);
-            }
-        } else {
-            $this->endDate = $endDate;
-        }
+        $this->setProperty('endDate', $endDate, 'validateDate');
 
         return $this;
     }
@@ -166,6 +154,8 @@ class RequestParameters
      * Sets query parameters.
      *
      * @param string|null $query
+     *
+     * @return self
      */
     public function setQuery($query)
     {
@@ -192,6 +182,8 @@ class RequestParameters
      * Sets page number. If null is supplied, resets to class default.
      *
      * @param int|null $page
+     *
+     * @return self
      */
     public function setPage($page)
     {
@@ -199,11 +191,7 @@ class RequestParameters
             $page = self::DEFAULT_PAGE;
         }
 
-        try {
-            $this->page = $this->validateNumeric($page);
-        } catch (InvalidArgumentException $e) {
-            throw new InvalidArgumentException('Invalid value for page parameter.', $e->getCode(), $e);
-        }
+        $this->setProperty('page', $page, 'validateNumeric');
 
         return $this;
     }
@@ -223,6 +211,8 @@ class RequestParameters
      * default.
      *
      * @param int|nul $maxResults
+     *
+     * @return self
      */
     public function setMaxResults($maxResults)
     {
@@ -230,11 +220,7 @@ class RequestParameters
             $maxResults = self::DEFAULT_MAX_RESULTS;
         }
 
-        try {
-            $this->maxResults = $this->validateNumeric($maxResults);
-        } catch (InvalidArgumentException $e) {
-            throw new InvalidArgumentException('Invalid value for maxResults parameter.', $e->getCode(), $e);
-        }
+        $this->setProperty('maxResults', $maxResults, 'validateNumeric');
 
         return $this;
     }
@@ -253,18 +239,12 @@ class RequestParameters
      * Sets include fields.
      *
      * @param array|null $includeFields
+     *
+     * @return self
      */
     public function setIncludeFields($includeFields)
     {
-        if ($includeFields !== null) {
-            try {
-                $this->includeFields = $this->validateStringOrArray($includeFields);
-            } catch (InvalidArgumentException $e) {
-                throw new InvalidArgumentException('Invalid value for include_fields parameter.', $e->getCode(), $e);
-            }
-        } else {
-            $this->includeFields = null;
-        }
+        $this->setProperty('includeFields', $includeFields, 'validateStringOrArray');
 
         return $this;
     }
@@ -283,18 +263,12 @@ class RequestParameters
      * Sets exclude fields
      *
      * @param array|null
+     *
+     * @return self
      */
     public function setExcludeFields($excludeFields)
     {
-        if ($excludeFields !== null) {
-            try {
-                $this->excludeFields = $this->validateStringOrArray($excludeFields);
-            } catch (InvalidArgumentException $e) {
-                throw new InvalidArgumentException('Invalid value for exclude_fields parameter.', $e->getCode(), $e);
-            }
-        } else {
-            $this->excludeFields = null;
-        }
+        $this->setProperty('excludeFields', $excludeFields, 'validateStringOrArray');
 
         return $this;
     }
@@ -305,6 +279,7 @@ class RequestParameters
      * @param  string|DateTime $date When string format yyyy-mm-dd should be used
      *
      * @return DateTime
+     * @throws InvalidArgumentException
      */
     private function validateDate($date)
     {
@@ -328,6 +303,7 @@ class RequestParameters
      * @param  string|array $value
      *
      * @return array
+     * @throws InvalidArgumentException
      */
     private function validateStringOrArray($value)
     {
@@ -346,6 +322,7 @@ class RequestParameters
      * @param  string|int $value
      *
      * @return int
+     * @throws InvalidArgumentException
      */
     private function validateNumeric($value)
     {
@@ -356,6 +333,30 @@ class RequestParameters
         }
 
         return $value;
+    }
+
+    /**
+     * Helper function for setting a property. Sets a proprety to a value, by
+     * pulling it through a validator function. If null is specified as value
+     * then property will be set to null as well..
+     *
+     * @param string $property Property name
+     * @param string $value Value of the property
+     * @param string $validator Name of the validator method
+     *
+     * @throws InvalidArgumentException
+     */
+    private function setProperty($property, $value, $validator)
+    {
+        if ($value !== null) {
+            try {
+                $this->$property = $this->$validator($value);
+            } catch (InvalidArgumentException $e) {
+                throw new InvalidArgumentException(sprintf('Invalid value for %s parameter.', $property), $e->getCode(), $e);
+            }
+        } else {
+            $this->$property = null;
+        }
     }
 
     /**

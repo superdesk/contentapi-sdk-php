@@ -17,8 +17,9 @@ namespace spec\Superdesk\ContentApiSdk\API\Pagerfanta;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Superdesk\ContentApiSdk\Client\ApiClientInterface;
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
 use Superdesk\ContentApiSdk\API\Request\PaginationDecorator;
+use Superdesk\ContentApiSdk\API\Request\RequestInterface;
+use Superdesk\ContentApiSdk\API\Request\RequestParameters;
 use Superdesk\ContentApiSdk\API\Response;
 use Superdesk\ContentApiSdk\Data\Item;
 
@@ -29,9 +30,14 @@ class ItemAdapterSpec extends ObjectBehavior
         $this->shouldHaveType('Superdesk\ContentApiSdk\API\Pagerfanta\ItemAdapter');
     }
 
-    function let(ApiClientInterface $client, RequestInterface $request)
-    {
+    function let(
+        ApiClientInterface $client,
+        RequestInterface $request,
+        RequestParameters $parameters
+    ) {
         $this->beConstructedWith($client, $request);
+        $request->getParameters()->willReturn($parameters);
+        $request->setParameters($parameters)->willreturn($request);
     }
 
     function its_method_get_slice_should_return_items($client, $request)

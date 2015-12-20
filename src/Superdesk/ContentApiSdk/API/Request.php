@@ -15,6 +15,7 @@
 namespace Superdesk\ContentApiSdk\API;
 
 use Superdesk\ContentApiSdk\API\Request\RequestInterface;
+use Superdesk\ContentApiSdk\API\Request\RequestParameters;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Exception\ResponseException;
 use Superdesk\ContentApiSdk\Exception\RequestException;
@@ -57,17 +58,9 @@ class Request implements RequestInterface
     /**
      * Parameters for request.
      *
-     * @var mixed[]
+     * @var RequestParameters
      */
-    protected $parameters = array();
-
-    /**
-     * Boolean for status of parameter handling. When set to true invalid
-     * parameters will be cleaned out before being sent to the API.
-     *
-     * @var boolean
-     */
-    protected $cleanParameters = true;
+    protected $parameters;
 
     /**
      * A list of parameters the Content API accepts.
@@ -102,14 +95,14 @@ class Request implements RequestInterface
      *
      * @param string $hostname Host name
      * @param string $uri Request uri
-     * @param mixed[] $parameters Parameters
+     * @param RequestParameters $parameters Parameters
      * @param int $port Port
      * @param string $protocol Protocol
      */
     public function __construct(
         $hostname = null,
         $uri = null,
-        array $parameters = null,
+        RequestParameters $parameters = null,
         $port = null,
         $protocol = null
     ) {
@@ -119,8 +112,10 @@ class Request implements RequestInterface
         if (is_string($uri) && !empty($uri)) {
             $this->setUri($uri);
         }
-        if (!empty($parameters)) {
+        if ($parameters !== null) {
             $this->setParameters($parameters);
+        } else {
+            $this->setParameters(new RequestParameters());
         }
         if (is_int($port)) {
             $this->setPort($port);
@@ -225,41 +220,9 @@ class Request implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function setParameters(array $parameters)
+    public function setParameters(RequestParameters $parameters)
     {
-        try {
-            $this->parameters = $this->processParameters($parameters, $this->cleanParameters);
-        } catch (InvalidArgumentException $e) {
-            throw new RequestException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCleanParameters()
-    {
-        return $this->cleanParameters;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function enableParameterCleaning()
-    {
-        $this->cleanParameters = true;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function disableParameterCleaning()
-    {
-        $this->cleanParameters = false;
+        $this->parameters = $parameters;
 
         return $this;
     }
@@ -313,72 +276,11 @@ class Request implements RequestInterface
      */
     public function getFullUrl()
     {
-        return sprintf('%s/%s?%s', $this->getBaseUrl(), trim($this->uri, '/ '), http_build_query($this->parameters));
-    }
-
-    /**
-     * Type conversion method for parameters accepted by the API. Will
-     * by default automatically unset invalid parameters, this behaviour can be
-     * overridden with the second argument.
-     *
-     * @param  mixed[] $requestParameters Array of parameters
-     * @param  boolean $unsetInvalidParameters Boolean to clean out invalid
-     *                                         parameters
-     *
-     * @return mixed[] Returns an array of parameters with API safe types
-     * @throws InvalidArgumentException When an invalid type is set for a
-     *                                  valid parameter
-     */
-    public function processParameters(
-        array $requestParameters,
-        $unsetInvalidParameters = true
-    ) {
-        $processedParameters = $requestParameters;
-
-        foreach ($requestParameters as $name => $value) {
-
-            if ($unsetInvalidParameters && !in_array($name, $this->validParameters)) {
-                unset($processedParameters[$name]);
-                continue;
-            }
-
-            switch ($name) {
-                case 'start_date':
-                case 'end_date':
-                        if (!is_string($value) && !($value instanceof \DateTime)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string or DateTime.', $name));
-                        } elseif ($value instanceof \DateTime) {
-                            $value = $value->format('Y-m-d');
-                        } elseif (!preg_match('/\d\d\d\d\-\d\d\-\d\d/', $value)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s has invalid format, please use yyyy-mm-dd.', $name));
-                        }
-                    break;
-                case 'q':
-                        if (!is_string($value)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string.', $name));
-                        }
-                    break;
-                case 'include_fields':
-                case 'exclude_fields':
-                        if (!is_string($value) && !is_array($value)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string or array.', $name));
-                        } elseif (is_array($value)) {
-                            $value = implode(',', $value);
-                        }
-                    break;
-                case 'page':
-                case 'max_results':
-                        if (!is_int($value) && !ctype_digit($value)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type integer.', $name));
-                        } elseif (!is_int($value)) {
-                            $value = (int) $value;
-                        }
-                    break;
-            }
-
-            $processedParameters[$name] = $value;
-        }
-
-        return $processedParameters;
+        return sprintf(
+            '%s/%s?%s',
+            $this->getBaseUrl(),
+            trim($this->uri, '/ '),
+            $this->parameters->getAllParameters(true)
+        );
     }
 }

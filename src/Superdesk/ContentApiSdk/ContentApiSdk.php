@@ -15,6 +15,7 @@
 namespace Superdesk\ContentApiSdk;
 
 use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\API\Request\RequestParameters;
 use Superdesk\ContentApiSdk\API\Response;
 use Superdesk\ContentApiSdk\API\Pagerfanta\ItemAdapter;
 use Superdesk\ContentApiSdk\API\Pagerfanta\PackageAdapter;
@@ -243,23 +244,23 @@ class ContentApiSdk
     /**
      * Get multiple items based on a filter.
      *
-     * @param array $params Filter parameters
-     * @param int $page Page to return
-     * @param int $maxResults Maximum amount of packages a page
+     * @param RequestParameters $paramObj Filter parameters
+     * @param int|null $page Page to return
+     * @param int|null $maxResults Maximum amount of packages a page
      *
      * @return ResourceCollection
      */
-    public function getItems($params, $page = 1, $maxResults = 25)
-    {
+    public function getItems(
+        RequestParameters $paramObj,
+        $page = null,
+        $maxResults = null
+    ) {
         $itemCollection = new ResourceCollection(
             new ItemAdapter(
                 $this->client,
-                $this->getNewRequest(self::SUPERDESK_ENDPOINT_ITEMS, $params)
+                $this->getNewRequest(self::SUPERDESK_ENDPOINT_ITEMS, $paramObj)
             )
         );
-
-        $itemCollection->setCurrentPage($page);
-        $itemCollection->setMaxPerPage($maxResults);
 
         return $itemCollection;
     }
@@ -292,31 +293,28 @@ class ContentApiSdk
     /**
      * Get multiple packages based on a filter.
      *
-     * @param array $params Filter parameters
-     * @param bool  $resolveAssociations Inject full associations recursively
-     *                                   instead of references by uri.
-     * @param int $page Page to return
-     * @param int $maxResults Maximum amount of packages a page
+     * @param RequestParameters $paramObj Filter parameters
+     * @param bool $resolveAssociations Inject full associations recursively
+     *                                  instead of references by uri.
+     * @param int|null $page Page to return
+     * @param int|null $maxResults Maximum amount of packages a page
      *
      * @return ResourceCollection
      */
     public function getPackages(
-        $params,
+        RequestParameters $paramObj,
         $resolveAssociations = false,
-        $page = 1,
-        $maxResults = 25
+        $page = null,
+        $maxResults = null
     ) {
         $packageCollection = new ResourceCollection(
             new PackageAdapter(
                 $this->client,
-                $this->getNewRequest(self::SUPERDESK_ENDPOINT_PACKAGES, $params),
+                $this->getNewRequest(self::SUPERDESK_ENDPOINT_PACKAGES, $paramObj),
                 $this,
                 $resolveAssociations
             )
         );
-
-        $packageCollection->setCurrentPage($page);
-        $packageCollection->setMaxPerPage($maxResults);
 
         return $packageCollection;
     }
@@ -332,12 +330,13 @@ class ContentApiSdk
     {
         $associations = new stdClass();
 
-        if (isset($package->associations)) {
+        if (property_exists($package, 'associations')) {
+
             foreach ($package->associations as $associationGroupName => $associationGroupItems) {
 
                 $groupAssociations = new stdClass();
 
-                foreach ($associationGroupItems AS $associatedName => $associatedItem) {
+                foreach ($associationGroupItems as $associatedName => $associatedItem) {
                     $associatedId = $this->getIdFromUri($associatedItem->uri);
 
                     try {
@@ -383,11 +382,12 @@ class ContentApiSdk
      * Shortcut method to create new class.
      *
      * @param  string $uri Uri of the request
-     * @param  array $parameters Parameters for the request object
+     * @param  RequestParameters|null $parameters Parameters for the request
+     *                                            object
      *
      * @return Request
      */
-    public function getNewRequest($uri, array $parameters = array())
+    public function getNewRequest($uri, RequestParameters $parameters = null)
     {
         try {
             $request = new Request($this->host, $uri, $parameters, $this->port, $this->protocol);

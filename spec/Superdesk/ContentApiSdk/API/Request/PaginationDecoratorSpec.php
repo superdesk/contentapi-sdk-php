@@ -34,23 +34,22 @@ class PaginationDecoratorSpec extends ObjectBehavior
     {
         $this->addPagination(5, 10);
         $parameters = $this->getParameters();
-        $parameters->shouldBeArray();
-        $parameters->shouldHaveKey('page');
-        $parameters->shouldHaveKeyWithValue('max_results', 10);
+        $parameters->shouldHaveType('\Superdesk\ContentApiSdk\API\Request\RequestParameters');
+        $parameters->getMaxResults()->shouldBe(10);
     }
 
     function it_should_create_correct_page_numbers()
     {
         $this->addPagination(0, 10);
         $parameters = $this->getParameters();
-        $parameters->shouldBeArray();
-        $parameters->shouldHaveKeyWithValue('page', 1);
-        $parameters->shouldHaveKeyWithValue('max_results', 10);
+        $parameters->shouldHaveType('\Superdesk\ContentApiSdk\API\Request\RequestParameters');
+        $parameters->getPage()->shouldBe(1);
+        $parameters->getMaxResults()->shouldBe(10);
 
         $this->addPagination(10, 10);
         $parameters = $this->getParameters();
-        $parameters->shouldBeArray();
-        $parameters->shouldHaveKeyWithValue('page', 2);
-        $parameters->shouldHaveKeyWithValue('max_results', 10);
+        $parameters->shouldHaveType('\Superdesk\ContentApiSdk\API\Request\RequestParameters');
+        $parameters->getPage()->shouldBe(2);
+        $parameters->getMaxResults()->shouldBe(10);
     }
 }

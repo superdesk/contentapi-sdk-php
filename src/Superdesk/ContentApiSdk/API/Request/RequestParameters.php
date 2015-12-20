@@ -341,7 +341,7 @@ class RequestParameters
      * then property will be set to null as well..
      *
      * @param string $property Property name
-     * @param string $value Value of the property
+     * @param mixed $value Value of the property
      * @param string $validator Name of the validator method
      *
      * @throws InvalidArgumentException

@@ -168,9 +168,9 @@ class RequestParametersSpec extends ObjectBehavior
 
     function it_should_throw_an_exception_on_invalid_max_results()
     {
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetPage(array());
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetPage('some page');
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetPage('seven');
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetMaxResults(array());
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetMaxResults('some page');
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetMaxResults('seven');
     }
 
     function it_should_throw_an_exception_on_invalid_include_fields()

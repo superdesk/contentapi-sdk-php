@@ -17,8 +17,6 @@ namespace spec\Superdesk\ContentApiSdk\Client;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\API\Response;
-use Superdesk\ContentApiSdk\API\Authentication\AuthenticationInterface;
 use Superdesk\ContentApiSdk\API\Authentication\OAuthPasswordAuthentication;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Exception\AccessDeniedException;

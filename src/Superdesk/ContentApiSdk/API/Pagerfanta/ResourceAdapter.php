@@ -15,8 +15,9 @@
 namespace Superdesk\ContentApiSdk\API\Pagerfanta;
 
 use Pagerfanta\Adapter\AdapterInterface;
-use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\Client\ClientInterface;
+use Superdesk\ContentApiSdk\API\Request\PaginationDecorator;
+use Superdesk\ContentApiSdk\API\Request\RequestInterface;
+use Superdesk\ContentApiSdk\Client\ApiClientInterface;
 
 /**
  * Base adapter for api resources.
@@ -26,24 +27,24 @@ class ResourceAdapter implements AdapterInterface
     /**
      * HTTP Client.
      *
-     * @var ClientInterface
+     * @var ApiClientInterface
      */
     protected $client;
 
     /**
      * API Request object.
      *
-     * @var Request
+     * @var RequestInterface
      */
     protected $request;
 
     /**
      * Instantiate object.
      *
-     * @param ClientInterface $client HTTP Client
-     * @param Request $request API Request object
+     * @param ApiClientInterface $client HTTP Client
+     * @param RequestInterface $request API Request object
      */
-    public function __construct(ClientInterface $client, Request $request)
+    public function __construct(ApiClientInterface $client, RequestInterface $request)
     {
         $this->client = $client;
         $this->request = $request;
@@ -54,9 +55,9 @@ class ResourceAdapter implements AdapterInterface
      *
      * @return \Superdesk\ContentApiSdk\API\Response API Response object
      */
-    private function doCall()
+    private function doCall(RequestInterface $request)
     {
-        return $this->client->makeApiCall($this->request);
+        return $this->client->makeApiCall($request);
     }
 
     /**
@@ -66,7 +67,7 @@ class ResourceAdapter implements AdapterInterface
      */
     public function getNbResults()
     {
-        $response = $this->doCall();
+        $response = $this->doCall($this->request);
 
         return $response->getTotalResults();
     }
@@ -83,9 +84,10 @@ class ResourceAdapter implements AdapterInterface
      */
     public function getSlice($offset, $length)
     {
-        $this->request->setOffsetAndLength($offset, $length);
+        $paginationRequest = new PaginationDecorator($this->request);
+        $paginationRequest->addPagination($offset, $length);
 
-        $response = $this->doCall();
+        $response = $this->doCall($paginationRequest);
 
         return $response->getResources();
     }

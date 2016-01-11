@@ -63,7 +63,7 @@ class Response
     /**
      * List of response headers.
      *
-     * @var array
+     * @var array|null
      */
     protected $headers;
 
@@ -159,12 +159,12 @@ class Response
 
         // Try to determine content type based on body
         try {
-            $xml = new SimpleXMLElement($this->rawBody);
+            new SimpleXMLElement($this->rawBody);
             $this->contentType = self::CONTENT_TYPE_XML;
 
             return;
         } catch (Exception $e) {
-            // Not xml
+            // Not valid XML
         }
 
         $json = json_decode($this->rawBody);
@@ -217,7 +217,6 @@ class Response
 
                     $this->nextPage = (property_exists($responseJson->_links, 'next')) ? $this->page + 1 : $this->page;
                     $this->prevPage = (property_exists($responseJson->_links, 'prev')) ? $this->page - 1 : $this->page;
-                    // TODO: Check if casting to int is really required
                     $this->lastPage = (property_exists($responseJson->_links, 'last')) ? (int) ceil($this->total / $this->maxResults) : $this->page;
 
                     $this->resources = $responseJson->_items;
@@ -237,9 +236,6 @@ class Response
 
                 break;
             case self::CONTENT_TYPE_XML:
-
-                // TODO: Handle proper xml output
-                // throw new \Exception('Build in XML support!');
                 break;
         }
 

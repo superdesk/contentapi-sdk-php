@@ -20,6 +20,7 @@ class ClientExceptionSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\Exception\ClientException');
+        $this->shouldHaveType('\Superdesk\ContentApiSdk\Exception\ClientException');
+        $this->shouldBeAnInstanceOf('\Superdesk\ContentApiSdk\Exception\ContentApiException');
     }
 }

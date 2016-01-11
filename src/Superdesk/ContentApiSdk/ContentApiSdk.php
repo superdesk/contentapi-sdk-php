@@ -15,17 +15,19 @@
 namespace Superdesk\ContentApiSdk;
 
 use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\API\Request\RequestParameters;
 use Superdesk\ContentApiSdk\API\Response;
 use Superdesk\ContentApiSdk\API\Pagerfanta\ItemAdapter;
 use Superdesk\ContentApiSdk\API\Pagerfanta\PackageAdapter;
 use Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection;
-use Superdesk\ContentApiSdk\Client\ClientInterface;
+use Superdesk\ContentApiSdk\Client\ApiClientInterface;
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Data\Package;
 use Superdesk\ContentApiSdk\Exception\ClientException;
 use Superdesk\ContentApiSdk\Exception\ContentApiException;
 use Superdesk\ContentApiSdk\Exception\InvalidArgumentException;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
+use Exception;
 use stdClass;
 
 /**
@@ -54,46 +56,59 @@ class ContentApiSdk
     const API_VERSION = 1;
 
     /**
-     * A list of parameters the Content API accepts.
-     * https://github.com/superdesk/superdesk-content-api/blob/master/content_api/items/service.py#L76
-     *
-     * @var array
+     * Useragent string sent to the API when making requests.
      */
-    public static $validParameters = array(
-        'start_date', 'end_date', 'q', 'max_results', 'page',
-        'include_fields', 'exclude_fields'
-    );
+    const USERAGENT = 'Content API SDK v1';
 
     /**
      * Any (http) client that implements ClientInterface.
      *
-     * @var ClientInterface
+     * @var ApiClientInterface
      */
     protected $client;
 
     /**
-     * Hostname of the api instance
+     * Protocol to reach the api instance.
      *
-     * @var string
+     * @var string|null
      */
-    protected $host;
+    protected $protocol = null;
 
     /**
-     * Port of the api instalce
+     * Hostname of the api instance.
      *
-     * @var int
+     * @var string|null
+     */
+    protected $host = null;
+
+    /**
+     * Port of the api instance.
+     *
+     * @var int|null
      */
     protected $port = null;
 
     /**
+     * Authentication object.
+     *
+     * @var AuthenticationInterface
+     */
+    protected $authentication = null;
+
+    /**
      * Construct method for class.
      *
-     * @param ClientInterface $client
+     * @param ApiClientInterface $client
      * @param string|null $host
      * @param int|null $port
+     * @param string|null $protocol
      */
-    public function __construct(ClientInterface $client, $host = null, $port = null)
-    {
+    public function __construct(
+        ApiClientInterface $client,
+        $host = null,
+        $port = null,
+        $protocol = null
+    ) {
         $this->client = $client;
 
         if (!is_null($host)) {
@@ -103,12 +118,16 @@ class ContentApiSdk
         if (!is_null($port)) {
             $this->setPort($port);
         }
+
+        if (!is_null($protocol)) {
+            $this->setProtocol($protocol);
+        }
     }
 
     /**
      * Gets the value of client.
      *
-     * @return ClientInterface
+     * @return ApiClientInterface
      */
     public function getClient()
     {
@@ -118,11 +137,11 @@ class ContentApiSdk
     /**
      * Sets the value of client.
      *
-     * @param ClientInterface $client Value to set
+     * @param ApiClientInterface $client Value to set
      *
      * @return self
      */
-    public function setClient(ClientInterface $client)
+    public function setClient(ApiClientInterface $client)
     {
         $this->client = $client;
 
@@ -132,7 +151,7 @@ class ContentApiSdk
     /**
      * Gets the value of apiHost.
      *
-     * @return string
+     * @return string|null
      */
     public function getHost()
     {
@@ -142,16 +161,12 @@ class ContentApiSdk
     /**
      * Sets the value of host.
      *
-     * @param string $host Value to set
+     * @param string|null $host Value to set
      *
      * @return self
      */
     public function setHost($host)
     {
-        if (!is_string($host)) {
-            throw new ContentApiException('The property host should be of type integer.');
-        }
-
         $this->host = $host;
 
         return $this;
@@ -160,7 +175,7 @@ class ContentApiSdk
     /**
      * Gets the value of port.
      *
-     * @return int
+     * @return int|null
      */
     public function getPort()
     {
@@ -170,17 +185,37 @@ class ContentApiSdk
     /**
      * Sets the value of port.
      *
-     * @param int $port Value to set
+     * @param int|null $port Value to set
      *
      * @return self
      */
     public function setPort($port)
     {
-        if (!is_int($port)) {
-            throw new ContentApiException('The property port should be of type integer.');
-        }
-
         $this->port = $port;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of protocol.
+     *
+     * @return string|null
+     */
+    public function getProtocol()
+    {
+        return $this->protocol;
+    }
+
+    /**
+     * Sets the value of protocol.
+     *
+     * @param string|null $protocol Value to set
+     *
+     * @return self
+     */
+    public function setProtocol($protocol)
+    {
+        $this->protocol = $protocol;
 
         return $this;
     }
@@ -209,24 +244,18 @@ class ContentApiSdk
     /**
      * Get multiple items based on a filter.
      *
-     * @param array $params Filter parameters
+     * @param RequestParameters $paramObj Filter parameters
      *
      * @return ResourceCollection
      */
-    public function getItems($params)
+    public function getItems(RequestParameters $paramObj)
     {
         $itemCollection = new ResourceCollection(
             new ItemAdapter(
                 $this->client,
-                $this->getNewRequest(self::SUPERDESK_ENDPOINT_ITEMS, $params)
+                $this->getNewRequest(self::SUPERDESK_ENDPOINT_ITEMS, $paramObj)
             )
         );
-
-        $page = (isset($params['page'])) ? $params['page'] : 1;
-        $maxResults = (isset($params['max_results'])) ? $params['max_results'] : 25;
-
-        $itemCollection->setCurrentPage($page);
-        $itemCollection->setMaxPerPage($maxResults);
 
         return $itemCollection;
     }
@@ -259,28 +288,24 @@ class ContentApiSdk
     /**
      * Get multiple packages based on a filter.
      *
-     * @param array $params Filter parameters
-     * @param bool  $resolveAssociations Inject full associations recursively
-     *                                   instead of references by uri.
+     * @param RequestParameters $paramObj Filter parameters
+     * @param bool $resolveAssociations Inject full associations recursively
+     *                                  instead of references by uri.
      *
      * @return ResourceCollection
      */
-    public function getPackages($params, $resolveAssociations = false)
-    {
+    public function getPackages(
+        RequestParameters $paramObj,
+        $resolveAssociations = false
+    ) {
         $packageCollection = new ResourceCollection(
             new PackageAdapter(
                 $this->client,
-                $this->getNewRequest(self::SUPERDESK_ENDPOINT_PACKAGES, $params),
+                $this->getNewRequest(self::SUPERDESK_ENDPOINT_PACKAGES, $paramObj),
                 $this,
                 $resolveAssociations
             )
         );
-
-        $page = (isset($params['page'])) ? $params['page'] : 1;
-        $maxResults = (isset($params['max_results'])) ? $params['max_results'] : 25;
-
-        $packageCollection->setCurrentPage($page);
-        $packageCollection->setMaxPerPage($maxResults);
 
         return $packageCollection;
     }
@@ -296,25 +321,24 @@ class ContentApiSdk
     {
         $associations = new stdClass();
 
-        if (isset($package->associations)) {
+        if (property_exists($package, 'associations')) {
+
             foreach ($package->associations as $associationGroupName => $associationGroupItems) {
 
                 $groupAssociations = new stdClass();
 
-                foreach ($associationGroupItems AS $associatedName => $associatedItem) {
+                foreach ($associationGroupItems as $associatedName => $associatedItem) {
                     $associatedId = $this->getIdFromUri($associatedItem->uri);
 
-                    if ($associatedItem->type == self::PACKAGE_TYPE_COMPOSITE) {
-                        try {
+                    try {
+                        if ($associatedItem->type == self::PACKAGE_TYPE_COMPOSITE) {
                             $associatedObj = $this->getPackage($associatedId, true);
-                        } catch (ContentApiException $e) {
-                        }
-                    } else {
-                        try {
+                        } else {
                             $associatedObj = $this->getItem($associatedId);
                             $associatedObj->type = $associatedItem->type;
-                        } catch (ContentApiException $e) {
                         }
+                    } catch (ContentApiException $e) {
+                        // If subrequests fail, dont fail main request
                     }
 
                     $groupAssociations->$associatedName = $associatedObj;
@@ -349,13 +373,20 @@ class ContentApiSdk
      * Shortcut method to create new class.
      *
      * @param  string $uri Uri of the request
-     * @param  array $parameters Parameters for the request object
+     * @param  RequestParameters|null $parameters Parameters for the request
+     *                                            object
      *
      * @return Request
      */
-    public function getNewRequest($uri, array $parameters = array())
+    public function getNewRequest($uri, RequestParameters $parameters = null)
     {
-        return new Request($this->host, $uri, $parameters, $this->port);
+        try {
+            $request = new Request($this->host, $uri, $parameters, $this->port, $this->protocol);
+        } catch (ContentApiException $e) {
+            throw new ContentApiException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return $request;
     }
 
     /**
@@ -397,90 +428,13 @@ class ContentApiSdk
     }
 
     /**
-     * Returns a list of parameters accepted by the Content API.
-     *
-     * @return string[]
-     */
-    public static function getValidParameters()
-    {
-        return self::$validParameters;
-    }
-
-    /**
-     * Automatically converts parameters to types accepted by the Content API.
-     * Can also validate parameters, will unset invalid ones if $validate is
-     * set to true. Throws an InvalidArgumentException when an invalid value
-     * is supplied for a parameter.
-     *
-     * @param  mixed[] $requestParameters Array of parameter, where key
-     *                                    represents the parameter name
-     * @param  boolean $validate Validation boolean
-     *
-     * @return mixed[] Returns an array of parameters with API safe value types
-     * @throws InvalidArgumentException
-     */
-    public static function processParameters(array $requestParameters, $validate = false)
-    {
-        $processedParameters = array();
-        $validParameters = self::getValidParameters();
-
-        foreach ($requestParameters as $name => $value) {
-
-            if ($validate && !in_array($name, $validParameters)) {
-                unset($requestParameters[$name]);
-                continue;
-            }
-
-            switch ($name) {
-                case 'start_date':
-                case 'end_date':
-                        if (!is_string($value) && !($value instanceof \DateTime)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string or DateTime.', $name));
-                        } elseif ($value instanceof \DateTime) {
-                            $value = $value->format('Y-m-d');
-                        } elseif (!preg_match('/\d\d\d\d\-\d\d\-\d\d/', $value)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s has invalid format, please use dddd-dd-dd.', $name));
-                        }
-                    break;
-                case 'q':
-                        if (!is_string($value)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string.', $name));
-                        }
-                    break;
-                case 'include_fields':
-                case 'exclude_fields':
-                        if (!is_string($value) && !is_array($value)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type string or array.', $name));
-                        } elseif (is_array($value)) {
-                            $value = implode(',', $value);
-                        }
-                    break;
-                case 'page':
-                case 'max_results':
-                        if (!is_int($value) && !ctype_digit($value)) {
-                            throw new InvalidArgumentException(sprintf('Parameter %s should be of type integer.', $name));
-                        } elseif (!is_int($value)) {
-                            $value = (int) $value;
-                        }
-                    break;
-                default:
-                    break;
-            }
-
-            $processedParameters[$name] = $value;
-        }
-
-        return $processedParameters;
-    }
-
-    /**
      * Converts json string into StdClass object. Throws an InvalidDataException
      * when string could not be converted to object.
      *
      * @param string $jsonString JSON string
      *
      * @return object
-     * @throws InvalidDataException
+     * @throws Exception|InvalidDataException
      */
     public static function getValidJsonObj($jsonString)
     {

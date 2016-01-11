@@ -14,6 +14,8 @@
 
 namespace Superdesk\ContentApiSdk\API;
 
+use Superdesk\ContentApiSdk\API\Request\RequestInterface;
+use Superdesk\ContentApiSdk\API\Request\RequestParameters;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Exception\ResponseException;
 use Superdesk\ContentApiSdk\Exception\RequestException;
@@ -23,7 +25,7 @@ use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 /**
  * API Request object.
  */
-class Request
+class Request implements RequestInterface
 {
     /**
      * Protocol for api request.
@@ -56,16 +58,23 @@ class Request
     /**
      * Parameters for request.
      *
-     * @var mixed[]
+     * @var RequestParameters
      */
     protected $parameters;
 
     /**
-     * Validate parameters, unset invalid ones.
+     * A list of parameters the Content API accepts.
      *
-     * @var boolean
+     * For a list of accepted parameters find the variable allowed_params in
+     * the following file:
+     * https://github.com/superdesk/superdesk-content-api/blob/master/content_api/items/service.py
+     *
+     * @var string[]
      */
-    protected $parameterValidation = true;
+    protected $validParameters = array(
+        'start_date', 'end_date', 'q', 'max_results', 'page',
+        'include_fields', 'exclude_fields'
+    );
 
     /**
      * Request headers.
@@ -86,63 +95,60 @@ class Request
      *
      * @param string $hostname Host name
      * @param string $uri Request uri
-     * @param mixed[] $parameters Parameters
+     * @param RequestParameters $parameters Parameters
      * @param int $port Port
+     * @param string $protocol Protocol
      */
-    public function __construct($hostname = null, $uri = null, array $parameters = array(), $port = null)
-    {
+    public function __construct(
+        $hostname = null,
+        $uri = null,
+        RequestParameters $parameters = null,
+        $port = null,
+        $protocol = null
+    ) {
         if (is_string($hostname) && !empty($hostname)) {
             $this->setHost($hostname);
         }
         if (is_string($uri) && !empty($uri)) {
             $this->setUri($uri);
         }
-        if (!empty($parameters)) {
+        if ($parameters !== null) {
             $this->setParameters($parameters);
+        } else {
+            $this->setParameters(new RequestParameters());
         }
         if (is_int($port)) {
             $this->setPort($port);
         }
+        if (is_string($protocol) && !empty($protocol)) {
+            $this->setProtocol($protocol);
+        }
     }
 
     /**
-     * Get base url.
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    public function getBaseUrl()
+    public function getProtocol()
     {
-        return sprintf('%s://%s:%s/%s', $this->protocol, $this->host, $this->port, ContentApiSdk::getVersionURL());
+        return $this->protocol;
     }
 
     /**
-     * Get full url.
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    public function getFullUrl()
+    public function setProtocol($protocol)
     {
-        return sprintf('%s/%s?%s', $this->getBaseUrl(), trim($this->uri, '/ '), http_build_query($this->parameters));
-    }
+        if ($protocol !== 'http' && $protocol !== 'https') {
+            throw new InvalidArgumentException('Property protocol can only have the values "http" or "https".');
+        }
 
-    /**
-     * Set hostname.
-     *
-     * @param string $host
-     *
-     * @return self
-     */
-    public function setHost($host)
-    {
-        $this->host = $host;
+        $this->protocol = $protocol;
 
         return $this;
     }
 
     /**
-     * Get host.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getHost()
     {
@@ -150,23 +156,21 @@ class Request
     }
 
     /**
-     * Set port.
-     *
-     * @param int $port
-     *
-     * @return self
+     * {@inheritdoc}
      */
-    public function setPort($port)
+    public function setHost($host)
     {
-        $this->port = $port;
+        if ($host === null || !is_string($host) || empty($host)) {
+            throw new InvalidArgumentException('Property host should be of type string and cannot be empty.');
+        }
+
+        $this->host = $host;
 
         return $this;
     }
 
     /**
-     * Get port.
-     *
-     * @return int
+     * {@inheritdoc}
      */
     public function getPort()
     {
@@ -174,11 +178,29 @@ class Request
     }
 
     /**
-     * Set uri.
-     *
-     * @param string $uri
-     *
-     * @return self
+     * {@inheritdoc}
+     */
+    public function setPort($port)
+    {
+        if (!is_int($port)) {
+            throw new InvalidArgumentException('Property port should be of type integer.');
+        }
+
+        $this->port = $port;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUri()
+    {
+        return $this->uri;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function setUri($uri)
     {
@@ -188,39 +210,7 @@ class Request
     }
 
     /**
-     * Get uri.
-     *
-     * @return string
-     */
-    public function getUri()
-    {
-        return $this->uri;
-    }
-
-    /**
-     * Set query parameters.
-     *
-     * @param string[] $parameters
-     *
-     * @return self
-     *
-     * @throws RequestException If parameters data types are invalid
-     */
-    public function setParameters(array $parameters)
-    {
-        try {
-            $this->parameters = ContentApiSdk::processParameters($parameters, $this->parameterValidation);
-        } catch (InvalidArgumentException $e) {
-            throw new RequestException($e->getMessage(), $e->getCode(), $e);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get query parameters.
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getParameters()
     {
@@ -228,31 +218,17 @@ class Request
     }
 
     /**
-     * Enables parameter validation
-     *
-     * @return self
+     * {@inheritdoc}
      */
-    public function enableParameterValidation()
+    public function setParameters(RequestParameters $parameters)
     {
-        $this->parameterValidation = true;
+        $this->parameters = $parameters;
 
         return $this;
     }
 
     /**
-     * Disables parameter validation
-     *
-     * @return self
-     */
-    public function disableParameterValidation()
-    {
-        $this->parameterValidation = false;
-    }
-
-    /**
-     * Gets the value of headers.
-     *
-     * @return string[]
+     * {@inheritdoc}
      */
     public function getHeaders()
     {
@@ -260,11 +236,7 @@ class Request
     }
 
     /**
-     * Sets the value of headers.
-     *
-     * @param string[] $headers Value to set
-     *
-     * @return self
+     * {@inheritdoc}
      */
     public function setHeaders(array $headers)
     {
@@ -274,9 +246,7 @@ class Request
     }
 
     /**
-     * Gets the value of options.
-     *
-     * @return mixed[]
+     * {@inheritdoc}
      */
     public function getOptions()
     {
@@ -284,11 +254,7 @@ class Request
     }
 
     /**
-     * Sets the value of options.
-     *
-     * @param mixed[] $options Value to set
-     *
-     * @return self
+     * {@inheritdoc}
      */
     public function setOptions(array $options)
     {
@@ -298,14 +264,23 @@ class Request
     }
 
     /**
-     * Sets page number and max results per page parameters.
-     *
-     * @param int $offset Offset of rows
-     * @param int $length Length of rows
+     * {@inheritdoc}
      */
-    public function setOffsetAndLength($offset, $length)
+    public function getBaseUrl()
     {
-        $this->parameters['page'] = ceil($offset / $length);
-        $this->parameters['max_results'] = $length;
+        return sprintf('%s://%s:%s', $this->protocol, $this->host, $this->port);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFullUrl()
+    {
+        return sprintf(
+            '%s/%s?%s',
+            $this->getBaseUrl(),
+            trim($this->uri, '/ '),
+            $this->parameters->getAllParameters(true)
+        );
     }
 }

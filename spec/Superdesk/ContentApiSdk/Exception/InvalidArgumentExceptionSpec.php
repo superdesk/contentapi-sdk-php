@@ -20,6 +20,7 @@ class InvalidArgumentExceptionSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\Exception\InvalidArgumentException');
+        $this->shouldHaveType('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException');
+        $this->shouldBeAnInstanceOf('\Superdesk\ContentApiSdk\Exception\ContentApiException');
     }
 }

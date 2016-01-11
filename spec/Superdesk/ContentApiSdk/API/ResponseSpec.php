@@ -15,7 +15,6 @@
 namespace spec\Superdesk\ContentApiSdk\API;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\API\Response;
 
@@ -148,10 +147,6 @@ class ResponseSpec extends ObjectBehavior
             if ($property == '_links') continue;
             $resource->shouldHaveProperty($property);
         }
-
-        // TODO: Should i care about this...
-        // $this->isFirstPage()->shouldBe(false);
-        // $this->isLastPage()->shouldBe(false);
     }
 
     function its_method_is_first_page_should_work()

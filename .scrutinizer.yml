@@ -6,3 +6,4 @@ checks:
 filter:
     excluded_paths:
         - spec/*
+        - sample/*

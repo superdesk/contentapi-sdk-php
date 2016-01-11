@@ -20,6 +20,7 @@ class InvalidDataExceptionSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\Exception\InvalidDataException');
+        $this->shouldHaveType('\Superdesk\ContentApiSdk\Exception\InvalidDataException');
+        $this->shouldBeAnInstanceOf('\Superdesk\ContentApiSdk\Exception\ContentApiException');
     }
 }

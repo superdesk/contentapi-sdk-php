@@ -12,8 +12,15 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\Client;
+namespace spec\Superdesk\ContentApiSdk\Exception;
 
-abstract class AbstractClient implements ClientInterface
+use PhpSpec\ObjectBehavior;
+
+class AuthenticationExceptionSpec extends ObjectBehavior
 {
+    function it_is_initializable()
+    {
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Exception\AuthenticationException');
+        $this->shouldBeAnInstanceOf('Superdesk\ContentApiSdk\Exception\ContentApiException');
+    }
 }

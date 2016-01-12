@@ -43,8 +43,6 @@ class DefaultApiClient extends AbstractApiClient
      */
     public function makeApiCall(RequestInterface $request)
     {
-        $response = null;
-
         // Request tokens when none are set
         if ($this->authenticator->getAccessToken() === null) {
             $this->getNewToken($request);

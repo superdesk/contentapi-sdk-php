@@ -109,18 +109,22 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
         }
 
         // TODO: Add server status 200 check?
-        try {
-            $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
-        } catch (InvalidDataException $e) {
-            throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
+        if ($response['status'] == 200) {
+            try {
+                $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
+            } catch (InvalidDataException $e) {
+                throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
+            }
+
+            if (property_exists($responseObj, 'access_token')) {
+                $this->accessToken = $responseObj->access_token;
+
+                return true;
+            }
+
+            throw new AuthenticationException('The server returned an unexpected response body.');
         }
 
-        if (property_exists($responseObj, 'access_token')) {
-            $this->accessToken = $responseObj->access_token;
-
-            return true;
-        }
-
-        throw new AuthenticationException('The server returned an unexpected response body.');
+        throw new AuthenticationException(sprintf('The server returned an error with status %s.', $response['status']), $response['status']);
     }
 }

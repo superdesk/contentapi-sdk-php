@@ -283,17 +283,17 @@ class RequestParameters
      */
     private function validateDate($date)
     {
-        if (!is_string($date) && !($date instanceof \DateTime)) {
-            throw new InvalidArgumentException('Parameter should be of type string or DateTime.');
-        } elseif (is_string($date)) {
-            if (!preg_match('/\d\d\d\d\-\d\d\-\d\d/', $date)) {
-                throw new InvalidArgumentException('Parameter %s has invalid format, please use yyyy-mm-dd.');
-            }
-
-            $date = new DateTime($date);
+        if ($date instanceof \DateTime) {
+            return $date;
         }
 
-        return $date;
+        if (!is_string($date)) {
+            throw new InvalidArgumentException('Parameter should be of type string or DateTime.');
+        } elseif (!preg_match('/\d\d\d\d\-\d\d\-\d\d/', $date)) {
+            throw new InvalidArgumentException('Parameter %s has invalid format, please use yyyy-mm-dd.');
+        }
+
+        return new DateTime($date);
     }
 
     /**

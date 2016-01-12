@@ -5,7 +5,7 @@
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/b7fbb859-3d37-4945-91ae-940daf0073ec/mini.png)](https://insight.sensiolabs.com/projects/b7fbb859-3d37-4945-91ae-940daf0073ec)
 
 This is an SDK written in PHP for the Superdesk Content API. For more 
-information take a look at our [API documentation](api/index.html).
+information take a look at our API documentation in the api directory.
 
 For more information about the Superdesk Content API please read the [documentation](http://docs.superdeskcontentapi.apiary.io/).
 

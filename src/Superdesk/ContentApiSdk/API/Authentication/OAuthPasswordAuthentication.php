@@ -108,6 +108,7 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
             throw new AuthenticationException('Could not request access token.', $e->getCode(), $e);
         }
 
+        // TODO: Add server status 200 check?
         try {
             $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
         } catch (InvalidDataException $e) {

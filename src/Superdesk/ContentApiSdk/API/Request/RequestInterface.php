@@ -16,6 +16,9 @@ namespace Superdesk\ContentApiSdk\Api\Request;
 
 use Superdesk\ContentApiSdk\API\Request\RequestParameters;
 
+/**
+ * Interface for API Requests.
+ */
 interface RequestInterface
 {
     /**

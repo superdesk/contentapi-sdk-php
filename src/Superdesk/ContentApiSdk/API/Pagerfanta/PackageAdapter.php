@@ -22,7 +22,7 @@ use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 use Exception;
 
 /**
- * Adapter for package
+ * Adapter for package.
  */
 class PackageAdapter extends ResourceAdapter
 {

@@ -4,8 +4,9 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Client\CurlClient;
-use Superdesk\ContentApiSdk\Client\CurlApiClient;
+use Superdesk\ContentApiSdk\Client\DefaultApiClient;
 use Superdesk\ContentApiSdk\API\Authentication\OAuthPasswordAuthentication;
+use Superdesk\ContentApiSdk\API\Request\RequestParameters;
 
 /**
  * Configure Below
@@ -23,7 +24,11 @@ define('API_PASSWORD', '');
  * End of configuration
  */
 
-$parameters = array('start_date' => date('Y-m-d', time('-7 days')));
+$parameters = new RequestParameters();
+$parameters
+    ->setStartDate(date('Y-m-d', strtotime('-7 days')))
+    ->setPage(1)
+    ->setMaxResults(1);
 
 $genericClient = new CurlClient();
 $authentication = new OAuthPasswordAuthentication($genericClient);
@@ -31,14 +36,14 @@ $authentication
     ->setClientId(API_CLIENT_ID)
     ->setUsername(API_USERNAME)
     ->setPassword(API_PASSWORD);
-$apiClient = new CurlApiClient($genericClient, $authentication);
+$apiClient = new DefaultApiClient($genericClient, $authentication);
 $contentApi = new ContentApiSdk($apiClient, API_HOST, API_PORT, API_PROTOCOL);
 
 
 
 echo ".:  Getting items  :.\n\n";
 
-$items = $contentApi->getItems($parameters, 1, 1);
+$items = $contentApi->getItems($parameters);
 
 echo "Total items: {$items->getNbResults()}\n";
 echo "Items per page: {$items->getMaxPerPage()}\n";
@@ -73,7 +78,7 @@ if ($items->haveToPaginate()) {
 
 echo "\n\n.:  Getting packages  :.\n\n";
 
-$packages = $contentApi->getPackages($parameters, true, 1, 1);
+$packages = $contentApi->getPackages($parameters, true);
 
 echo "Total packages: {$packages->getNbResults()}\n";
 echo "Packages per page: {$packages->getMaxPerPage()}\n";

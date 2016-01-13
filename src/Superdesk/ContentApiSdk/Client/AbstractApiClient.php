@@ -16,6 +16,9 @@ namespace Superdesk\ContentApiSdk\Client;
 
 use Superdesk\ContentApiSdk\API\Authentication\AuthenticationInterface;
 
+/**
+ * Abstract for api clients.
+ */
 abstract class AbstractApiClient implements ApiClientInterface
 {
     const MAX_RETRY_LIMIT = 3;
@@ -35,11 +38,11 @@ abstract class AbstractApiClient implements ApiClientInterface
     protected $authenticator;
 
     /**
-     * Retry limit counter for authentication.
+     * Retry attempt counter for authentication.
      *
      * @var int
      */
-    protected $authenticationRetryLimit = 0;
+    protected $authenticationRetryAttempt = 0;
 
     /**
      * {@inheritdoc}
@@ -50,5 +53,49 @@ abstract class AbstractApiClient implements ApiClientInterface
     ) {
         $this->client = $client;
         $this->authenticator = $authenticator;
+    }
+
+    /**
+     * Sets authentication retry limit to 0.
+     *
+     * @return void
+     */
+    protected function resetAuthenticationRetryAttempt()
+    {
+        $this->authenticationRetryAttempt = 0;
+
+        return;
+    }
+
+    /**
+     * Increments the authentication retry attempt with 1.
+     *
+     * @return void
+     */
+    protected function incrementAuthenticationRetryAttempt()
+    {
+        $this->authenticationRetryAttempt++;
+
+        return;
+    }
+
+    /**
+     * Returns authentication retry count.
+     *
+     * @return int
+     */
+    public function getAuthenticationRetryAttempt()
+    {
+        return $this->authenticationRetryAttempt;
+    }
+
+    /**
+     * Returns whether the authentication limit is reached.
+     *
+     * @return boolean
+     */
+    protected function isAuthenticationRetryLimitReached()
+    {
+        return $this->getAuthenticationRetryAttempt() > self::MAX_RETRY_LIMIT;
     }
 }

@@ -21,6 +21,7 @@ use Superdesk\ContentApiSdk\API\Request\RequestInterface;
 use Superdesk\ContentApiSdk\API\Request\PaginationDecorator;
 use Superdesk\ContentApiSdk\API\Response;
 use Superdesk\ContentApiSdk\Data\Item;
+use Superdesk\ContentApiSdk\Exception\AuthenticationException;
 
 class OAuthPasswordAuthenticationSpec extends ObjectBehavior
 {
@@ -63,7 +64,36 @@ class OAuthPasswordAuthenticationSpec extends ObjectBehavior
         $this->getAccessToken()->shouldBe('some_access_token');
     }
 
-    function it_should_throw_an_exception_on_an_invalid_response($client)
+    function it_should_throw_an_exception_on_an_non_successful_status_code($client)
+    {
+        $client->makeCall(
+            Argument::type('string'),
+            Argument::type('array'),
+            Argument::type('array'),
+            'POST',
+            Argument::type('array')
+        )->willReturn(array(
+            'headers' => array(),
+            'status' => 403,
+            'body' => '{"scope": "content_api", "refresh_token": "some_refresh_token", "token_type": "Bearer", "access_token": "some_access_token"}'
+        ));
+        $this->shouldThrow('Superdesk\ContentApiSdk\Exception\AuthenticationException')->duringGetAuthenticationTokens();
+
+        $client->makeCall(
+            Argument::type('string'),
+            Argument::type('array'),
+            Argument::type('array'),
+            'POST',
+            Argument::type('array')
+        )->willReturn(array(
+            'headers' => array(),
+            'status' => 500,
+            'body' => '{"scope": "content_api", "refresh_token": "some_refresh_token", "token_type": "Bearer", "access_token": "some_access_token"}'
+        ));
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\AuthenticationException')->duringGetAuthenticationTokens();
+    }
+
+    function it_should_throw_an_exception_on_a_json_response_body_with_unkown_format($client)
     {
         $client->makeCall(
             Argument::type('string'),
@@ -76,8 +106,11 @@ class OAuthPasswordAuthenticationSpec extends ObjectBehavior
             'status' => 200,
             'body' => '{"some_key": "some data"}'
         ));
-        $this->shouldThrow('Superdesk\ContentApiSdk\Exception\AuthenticationException')->duringGetAuthenticationTokens();
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\AuthenticationException')->duringGetAuthenticationTokens();
+    }
 
+    function it_should_throw_an_exception_on_a_non_json_response_body($client)
+    {
         $client->makeCall(
             Argument::type('string'),
             Argument::type('array'),
@@ -89,6 +122,6 @@ class OAuthPasswordAuthenticationSpec extends ObjectBehavior
             'status' => 200,
             'body' => null
         ));
-        $this->shouldThrow('Superdesk\ContentApiSdk\Exception\AuthenticationException')->duringGetAuthenticationTokens();
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\AuthenticationException')->duringGetAuthenticationTokens();
     }
 }

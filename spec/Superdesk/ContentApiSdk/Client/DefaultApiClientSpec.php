@@ -24,7 +24,6 @@ use Superdesk\ContentApiSdk\Exception\AccessDeniedException;
 
 class DefaultApiClientSpec extends ObjectBehavior
 {
-    // TODO: Check if we can make OAuthPasswordAUthentication more generic, e.g. user interface or parent class
     function let(
         ClientInterface $client,
         OAuthPasswordAuthentication $authentication,

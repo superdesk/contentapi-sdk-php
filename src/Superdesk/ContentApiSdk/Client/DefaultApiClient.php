@@ -82,7 +82,7 @@ class DefaultApiClient extends AbstractApiClient
      *
      * @throws ClientException Thrown when response object could not be created
      */
-    private function createResponseObject(array $response)
+    protected function createResponseObject(array $response)
     {
         try {
             return new Response($response['body'], $response['headers']);
@@ -98,7 +98,7 @@ class DefaultApiClient extends AbstractApiClient
      *
      * @return OAuthDecorator OAuth ready decorated Request
      */
-    private function authenticateRequest(RequestInterface $request)
+    protected function authenticateRequest(RequestInterface $request)
     {
         $authenticatedRequest = new OAuthDecorator($request);
         $authenticatedRequest->setAccessToken($this->authenticator->getAccessToken());
@@ -116,8 +116,9 @@ class DefaultApiClient extends AbstractApiClient
      *
      * @throws ClientException Thrown when response could not be created.
      */
-    private function sendRequest(RequestInterface $request)
+    protected function sendRequest(RequestInterface $request)
     {
+        echo 456; exit;
         return $this->client->makeCall(
             $request->getFullUrl(),
             $this->addDefaultHeaders($request->getHeaders()),
@@ -132,7 +133,7 @@ class DefaultApiClient extends AbstractApiClient
      *
      * @return void
      */
-    private function getNewToken(RequestInterface $request)
+    protected function getNewToken(RequestInterface $request)
     {
         try {
             $this->authenticator->setBaseUrl($request->getBaseUrl());
@@ -152,7 +153,7 @@ class DefaultApiClient extends AbstractApiClient
      *
      * @return array
      */
-    private function addDefaultHeaders($headers)
+    protected function addDefaultHeaders($headers)
     {
         foreach ($this->headers as $key => $value) {
             if (!isset($headers[$key])) {

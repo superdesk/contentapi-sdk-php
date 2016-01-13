@@ -20,6 +20,9 @@ use Superdesk\ContentApiSdk\Exception\AuthenticationException;
 use Superdesk\ContentApiSdk\Exception\ClientException;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 
+/**
+ * OAuth password authentication class.
+ */
 class OAuthPasswordAuthentication extends AbstractAuthentication
 {
     const AUTHENTICATION_GRANT_TYPE = 'password';
@@ -108,7 +111,6 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
             throw new AuthenticationException('Could not request access token.', $e->getCode(), $e);
         }
 
-        // TODO: Add server status 200 check?
         if ($response['status'] == 200) {
             try {
                 $responseObj = ContentApiSdk::getValidJsonObj($response['body']);

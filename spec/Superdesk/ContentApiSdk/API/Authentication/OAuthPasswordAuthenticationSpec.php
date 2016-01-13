@@ -90,7 +90,7 @@ class OAuthPasswordAuthenticationSpec extends ObjectBehavior
             'status' => 500,
             'body' => '{"scope": "content_api", "refresh_token": "some_refresh_token", "token_type": "Bearer", "access_token": "some_access_token"}'
         ));
-        $this->shouldThrow('Superdesk\ContentApiSdk\Exception\AuthenticationException')->duringGetAuthenticationTokens();
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\AuthenticationException')->duringGetAuthenticationTokens();
     }
 
     function it_should_throw_an_exception_on_a_json_response_body_with_unkown_format($client)
@@ -106,7 +106,7 @@ class OAuthPasswordAuthenticationSpec extends ObjectBehavior
             'status' => 200,
             'body' => '{"some_key": "some data"}'
         ));
-        $this->shouldThrow(new AuthenticationException('The server returned an unexpected response body.'))->duringGetAuthenticationTokens();
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\AuthenticationException')->duringGetAuthenticationTokens();
     }
 
     function it_should_throw_an_exception_on_a_non_json_response_body($client)
@@ -122,6 +122,6 @@ class OAuthPasswordAuthenticationSpec extends ObjectBehavior
             'status' => 200,
             'body' => null
         ));
-        $this->shouldThrow(new AuthenticationException('Authentication response body is not (valid) json.'))->duringGetAuthenticationTokens();
+        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\AuthenticationException')->duringGetAuthenticationTokens();
     }
 }

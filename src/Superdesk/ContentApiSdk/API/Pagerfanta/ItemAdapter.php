@@ -19,7 +19,7 @@ use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 use Exception;
 
 /**
- * Adapter for items
+ * Adapter for items.
  */
 class ItemAdapter extends ResourceAdapter
 {

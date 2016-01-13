@@ -16,6 +16,9 @@ namespace Superdesk\ContentApiSdk\Client;
 
 use Superdesk\ContentApiSdk\API\Authentication\AuthenticationInterface;
 
+/**
+ * Abstract for api clients.
+ */
 abstract class AbstractApiClient implements ApiClientInterface
 {
     const MAX_RETRY_LIMIT = 3;

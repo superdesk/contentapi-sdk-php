@@ -77,7 +77,16 @@ class DefaultApiClient extends AbstractApiClient
         throw new ClientException(sprintf('The server returned an error with status %s.', $response['status']), $response['status']);
     }
 
-    private function createResponseObject($response)
+    /**
+     * Creates response object from response array.
+     *
+     * @param  array $response
+     *
+     * @return Response API Response object
+     *
+     * @throws ClientException Thrown when response object could not be created
+     */
+    private function createResponseObject(array $response)
     {
         try {
             return new Response($response['body'], $response['headers']);

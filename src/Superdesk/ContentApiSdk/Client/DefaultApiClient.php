@@ -118,7 +118,6 @@ class DefaultApiClient extends AbstractApiClient
      */
     protected function sendRequest(RequestInterface $request)
     {
-        echo 456; exit;
         return $this->client->makeCall(
             $request->getFullUrl(),
             $this->addDefaultHeaders($request->getHeaders()),

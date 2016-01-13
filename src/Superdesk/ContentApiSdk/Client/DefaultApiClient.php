@@ -43,14 +43,18 @@ class DefaultApiClient extends AbstractApiClient
      */
     public function makeApiCall(RequestInterface $request)
     {
-        // Request tokens when none are set
         if ($this->authenticator->getAccessToken() === null) {
             $this->getNewToken($request);
         }
 
         $response = $this->sendRequest($this->authenticateRequest($request));
 
-        if ($response['status'] === 401) {
+        if ($response['status'] === 200) {
+
+            $this->resetAuthenticationRetryAttempt();
+
+            return $this->createResponseObject($response);
+        } elseif ($response['status'] === 401) {
 
             $this->incrementAuthenticationRetryAttempt();
 
@@ -63,15 +67,7 @@ class DefaultApiClient extends AbstractApiClient
             // each time this method is called.
             $this->getNewToken($request);
 
-            // Retry making an api call
             return $this->makeApiCall($request);
-        }
-
-        if ($response['status'] == 200) {
-
-            $this->resetAuthenticationRetryAttempt();
-
-            return $this->createResponseObject($response);
         }
 
         throw new ClientException(sprintf('The server returned an error with status %s.', $response['status']), $response['status']);

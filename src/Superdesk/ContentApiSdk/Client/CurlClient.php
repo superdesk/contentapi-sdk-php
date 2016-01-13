@@ -64,7 +64,7 @@ class CurlClient implements ClientInterface
 
         $responseArray = array(
             'headers' => $this->parseHttpHeaders(mb_substr($response, 0, $header_size)),
-            'status' => curl_getinfo($curlHandler, CURLINFO_HTTP_CODE),
+            'status' => (int) curl_getinfo($curlHandler, CURLINFO_HTTP_CODE),
             'body' => (mb_strlen($response) > $header_size) ? mb_substr($response, $header_size) : ''
         );
 

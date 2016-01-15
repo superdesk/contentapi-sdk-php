@@ -81,13 +81,13 @@ class RequestParameters
      * @var string[]
      */
     protected $propertyMapping = array(
-        'start_date' => 'getStartDate',
-        'end_date' => 'getEndDate',
-        'q' => 'getQuery',
-        'page' => 'getPage',
-        'max_results' => 'getMaxResults',
-        'include_fields' => 'getIncludeFields',
-        'exclude_fields' => 'getExcludeFields',
+        'start_date' => 'StartDate',
+        'end_date' => 'EndDate',
+        'q' => 'Query',
+        'page' => 'Page',
+        'max_results' => 'MaxResults',
+        'include_fields' => 'IncludeFields',
+        'exclude_fields' => 'ExcludeFields',
     );
 
     /**
@@ -360,6 +360,25 @@ class RequestParameters
     }
 
     /**
+     * Internal method to get the correct method when only a query parameter
+     * key is available.
+     *
+     * @param  string $queryKey [description]
+     * @param  string $action This will be prepended to the method name,
+     *                        defaults to 'get'.
+     *
+     * @return string|null Returns the method or null when the key doesn't exist.
+     */
+    private function getMethodForQueryKey($queryKey, $action = 'get')
+    {
+        if (isset($this->propertyMapping[$queryKey])) {
+            return sprintf('%s%s', $action, $this->propertyMapping[$queryKey]);
+        }
+
+        return null;
+    }
+
+    /**
      * Returns all properties either as an array or http query string.
      *
      * @param  boolean $buildHttpQuery Build query from array
@@ -370,8 +389,9 @@ class RequestParameters
     {
         $httpQuery = array();
 
-        foreach ($this->propertyMapping as $uriParameter => $method) {
+        foreach ($this->propertyMapping as $uriParameter => $methodPart) {
 
+            $method = $this->getMethodForQueryKey($uriParameter);
             $value = $this->$method();
 
             if ($value instanceof DateTIme) {
@@ -382,5 +402,26 @@ class RequestParameters
         }
 
         return ($buildHttpQuery) ? http_build_query($httpQuery) : $httpQuery;
+    }
+
+    /**
+     * Uses an array of query parameters and sets the values for the current
+     * RequestParameters object. Does an internal check whether the query key
+     * is a valid API query key.
+     *
+     * @param  array $requestParameters
+     *
+     * @return self Returns the current object with the properties set
+     */
+    public function setQueryParameterArray(array $requestParameters = array())
+    {
+        foreach ($requestParameters as $key => $value) {
+            if (isset($this->propertyMapping[$key])) {
+                $method = $this->getMethodForQueryKey($key, 'set');
+                $this->$method($value);
+            }
+        }
+
+        return $this;
     }
 }

@@ -182,4 +182,23 @@ class RequestParametersSpec extends ObjectBehavior
     {
         $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\InvalidArgumentException')->duringSetExcludeFields(123456789);
     }
+
+    function its_method_set_query_parameter_array_should_set_the_properties_from_an_array()
+    {
+        $queryParameterArray = array(
+            'q' => 'some_text',
+            'start_date' => '2015-01-01'
+        );
+        $this->setQueryParameterArray($queryParameterArray);
+        $this->getQuery()->shouldReturn($queryParameterArray['q']);
+        $this->getStartDate()->format('Y-m-d')->shouldReturn($queryParameterArray['start_date']);
+    }
+
+    function its_method_set_query_parameter_array_should_ignore_invalid_keys_and_not_throw_an_exception()
+    {
+        $queryParameterArray = array(
+            'some_invalid_key' => 'some_value'
+        );
+        $this->setQueryParameterArray($queryParameterArray);
+    }
 }

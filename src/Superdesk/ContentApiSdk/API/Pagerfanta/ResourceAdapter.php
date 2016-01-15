@@ -51,7 +51,7 @@ class ResourceAdapter implements AdapterInterface
     }
 
     /**
-     * Make call HTTP call.
+     * Make HTTP call.
      *
      * @return \Superdesk\ContentApiSdk\API\Response API Response object
      */

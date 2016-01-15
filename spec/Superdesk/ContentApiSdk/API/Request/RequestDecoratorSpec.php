@@ -16,8 +16,9 @@ namespace spec\Superdesk\ContentApiSdk\API\Request;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
 use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\API\Request\RequestInterface;
+use Superdesk\ContentApiSdk\API\Request\RequestParameters;
 
 class RequestDecoratorSpec extends ObjectBehavior
 {
@@ -28,10 +29,14 @@ class RequestDecoratorSpec extends ObjectBehavior
 
     function let()
     {
-        $request = new Request('example.com', '/request/uri', array(
-            'q' => 'text',
-            'max_results' => 10
-        ), 100);
+        $requestParams = new RequestParameters();
+        $requestParams->setQuery('text')->setMaxResults(10);
+        $request = new Request(
+            'example.com',
+            '/request/uri',
+            $requestParams,
+            100
+        );
         $request->setHeaders(array(
             'Content-Type' => 'application/json'
         ));
@@ -58,10 +63,7 @@ class RequestDecoratorSpec extends ObjectBehavior
 
     function it_should_return_the_parameters_of_the_decorated_request()
     {
-        $this->getParameters()->shouldReturn(array(
-            'q' => 'text',
-            'max_results' => 10
-        ));
+        $this->getParameters()->shouldHaveType('\Superdesk\ContentApiSdk\API\Request\RequestParameters');
     }
 
     function it_should_return_the_headers_of_the_decorated_request()
@@ -85,6 +87,6 @@ class RequestDecoratorSpec extends ObjectBehavior
 
     function it_should_return_the_full_url_of_the_decorated_request()
     {
-        $this->getFullUrl()->shouldBe('https://example.com:100/request/uri?q=text&max_results=10');
+        $this->getFullUrl()->shouldBe('https://example.com:100/request/uri?q=text&page=1&max_results=10');
     }
 }

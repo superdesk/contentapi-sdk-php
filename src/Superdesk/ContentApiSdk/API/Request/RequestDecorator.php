@@ -14,6 +14,8 @@
 
 namespace Superdesk\ContentApiSdk\API\Request;
 
+use Superdesk\ContentApiSdk\API\Request\RequestParameters;
+
 /**
  * Base decorator class for API Requests.
  */
@@ -117,37 +119,9 @@ class RequestDecorator implements RequestInterface
     /**
      * {@inheritdoc}
      */
-    public function setParameters(array $parameters)
+    public function setParameters(RequestParameters $parameters)
     {
         $this->decoratedRequest->setParameters($parameters);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCleanParameters()
-    {
-        return $this->decoratedRequest->getCleanParameters();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function enableParameterCleaning()
-    {
-        $this->decoratedRequest->enableParameterCleaning();
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function disableParameterCleaning()
-    {
-        $this->decoratedRequest->disableParameterCleaning();
 
         return $this;
     }

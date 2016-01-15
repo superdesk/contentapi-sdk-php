@@ -16,6 +16,9 @@ namespace Superdesk\ContentApiSdk\API\Authentication;
 
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 
+/**
+ * Abstract class for accesstoken based authentication.
+ */
 abstract class AbstractAuthentication implements AuthenticationInterface
 {
     /**

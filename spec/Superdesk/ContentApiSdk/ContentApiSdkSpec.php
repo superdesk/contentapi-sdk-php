@@ -19,6 +19,7 @@ use Prophecy\Argument;
 use Superdesk\ContentApiSdk\Client\ApiClientInterface;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\API\Request\RequestParameters;
 use Superdesk\ContentApiSdk\API\Response;
 
 class ContentApiSdkSpec extends ObjectBehavior
@@ -69,7 +70,8 @@ class ContentApiSdkSpec extends ObjectBehavior
 
     function its_method_get_items_should_return_a_resource_collection(ApiClientInterface $client, Request $request)
     {
-        $parameters = array('start_date' => '1970-01-01');
+        $parameters = new RequestParameters();
+        $parameters->setStartDate('1970-01-01');
         $request = $this->getNewRequest(ContentApiSdk::SUPERDESK_ENDPOINT_ITEMS, $parameters);
         $client->makeApiCall($request)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "items", "href": "items?start_date=2015-08-01" } }, "_items": [], "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
         $this->getItems($parameters)->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection');
@@ -84,7 +86,8 @@ class ContentApiSdkSpec extends ObjectBehavior
 
     function its_method_get_packges_should_return_a_resource_collection(ApiClientInterface $client, Request $request)
     {
-        $parameters = array('start_date' => '1970-01-01');
+        $parameters = new RequestParameters();
+        $parameters->setStartDate('1970-01-01');
         $request = $this->getNewRequest(ContentApiSdk::SUPERDESK_ENDPOINT_PACKAGES, $parameters);
         $client->makeApiCall($request)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "items", "href": "items?start_date=2015-08-01" } }, "_items": [], "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
         $this->getPackages($parameters)->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection');

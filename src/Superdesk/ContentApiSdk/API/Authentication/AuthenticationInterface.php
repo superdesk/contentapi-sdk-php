@@ -17,6 +17,9 @@ namespace Superdesk\ContentApiSdk\API\Authentication;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Exception\AuthenticationException;
 
+/**
+ * Simple authentication interface for accesstoken based authentication.
+ */
 interface AuthenticationInterface
 {
     /**

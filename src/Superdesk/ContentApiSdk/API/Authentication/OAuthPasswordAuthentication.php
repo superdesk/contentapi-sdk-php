@@ -20,6 +20,9 @@ use Superdesk\ContentApiSdk\Exception\AuthenticationException;
 use Superdesk\ContentApiSdk\Exception\ClientException;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;
 
+/**
+ * OAuth password authentication class.
+ */
 class OAuthPasswordAuthentication extends AbstractAuthentication
 {
     const AUTHENTICATION_GRANT_TYPE = 'password';
@@ -108,17 +111,21 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
             throw new AuthenticationException('Could not refresh access token.', $e->getCode(), $e);
         }
 
-        try {
-            $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
-        } catch (InvalidDataException $e) {
-            throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
-        }
+        if ($response['status'] === 200) {
+            try {
+                $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
+            } catch (InvalidDataException $e) {
+                throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
+            }
 
-        if (property_exists($responseObj, 'access_token') && property_exists($responseObj, 'refresh_token')) {
-            $this->accessToken = $responseObj->access_token;
-            $this->refreshToken = $responseObj->refresh_token;
+            if (property_exists($responseObj, 'access_token') && property_exists($responseObj, 'refresh_token')) {
+                $this->accessToken = $responseObj->access_token;
+                $this->refreshToken = $responseObj->refresh_token;
 
-            return true;
+                return true;
+            }
+
+            throw new AuthenticationException('The server returned an unexpected response body.');
         }
 
         throw new AuthenticationException('The server returned an unexpected response body.');
@@ -146,19 +153,23 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
             throw new AuthenticationException('Could not request access token.', $e->getCode(), $e);
         }
 
-        try {
-            $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
-        } catch (InvalidDataException $e) {
-            throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
+        if ($response['status'] === 200) {
+            try {
+                $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
+            } catch (InvalidDataException $e) {
+                throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
+            }
+
+            if (property_exists($responseObj, 'access_token') && property_exists($responseObj, 'refresh_token')) {
+                $this->accessToken = $responseObj->access_token;
+                $this->refreshToken = $responseObj->refresh_token;
+
+                return true;
+            }
+
+            throw new AuthenticationException('The server returned an unexpected response body.');
         }
 
-        if (property_exists($responseObj, 'access_token') && property_exists($responseObj, 'refresh_token')) {
-            $this->accessToken = $responseObj->access_token;
-            $this->refreshToken = $responseObj->refresh_token;
-
-            return true;
-        }
-
-        throw new AuthenticationException('The server returned an unexpected response body.');
+        throw new AuthenticationException(sprintf('The server returned an error with status %s.', $response['status']), $response['status']);
     }
 }

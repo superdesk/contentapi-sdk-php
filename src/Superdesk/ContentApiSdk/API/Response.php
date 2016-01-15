@@ -217,7 +217,6 @@ class Response
 
                     $this->nextPage = (property_exists($responseJson->_links, 'next')) ? $this->page + 1 : $this->page;
                     $this->prevPage = (property_exists($responseJson->_links, 'prev')) ? $this->page - 1 : $this->page;
-                    // TODO: Check if casting to int is really required
                     $this->lastPage = (property_exists($responseJson->_links, 'last')) ? (int) ceil($this->total / $this->maxResults) : $this->page;
 
                     $this->resources = $responseJson->_items;
@@ -237,7 +236,6 @@ class Response
 
                 break;
             case self::CONTENT_TYPE_XML:
-                // TODO: Handle proper xml output
                 break;
         }
 

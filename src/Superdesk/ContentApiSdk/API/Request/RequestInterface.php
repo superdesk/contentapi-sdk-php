@@ -14,6 +14,11 @@
 
 namespace Superdesk\ContentApiSdk\Api\Request;
 
+use Superdesk\ContentApiSdk\API\Request\RequestParameters;
+
+/**
+ * Interface for API Requests.
+ */
 interface RequestInterface
 {
     /**
@@ -83,20 +88,18 @@ interface RequestInterface
     /**
      * Get query parameters.
      *
-     * @return array
+     * @return RequestParameters
      */
     public function getParameters();
 
     /**
      * Set query parameters.
      *
-     * @param string[] $parameters
+     * @param RequestParameters $parameters
      *
      * @return self
-     *
-     * @throws RequestException If parameters data types are invalid
      */
-    public function setParameters(array $parameters);
+    public function setParameters(RequestParameters $parameters);
 
     /**
      * Gets the value of headers.
@@ -129,27 +132,6 @@ interface RequestInterface
      * @return self
      */
     public function setOptions(array $options);
-
-    /**
-     * Get parameter cleaning status.
-     *
-     * @return boolean
-     */
-    public function getCleanParameters();
-
-    /**
-     * Enables cleaning of invalid parameters before being sent to the API.
-     *
-     * @return self
-     */
-    public function enableParameterCleaning();
-
-    /**
-     * Disables cleaning of invalid parameters before being sent to the API.
-     *
-     * @return self
-     */
-    public function disableParameterCleaning();
 
     /**
      * Get base url.

@@ -14,7 +14,8 @@
 
 namespace Superdesk\ContentApiSdk\API\Request;
 
-use Superdesk\ContentApiSdk\ContentApiSdk;
+use Superdesk\ContentApiSdk\Exception\InvalidArgumentException;
+use Superdesk\ContentApiSdk\Exception\RequestException;
 
 /**
  * Pagination decorator for API request.
@@ -31,10 +32,14 @@ class PaginationDecorator extends RequestDecorator
      */
     public function addPagination($offset, $length)
     {
-        $parameters = $this->getParameters();
-        $parameters['page'] = (int) (ceil($offset / $length) + 1);
-        $parameters['max_results'] = (int) $length;
-        $this->setParameters($parameters);
+        try {
+            $parameters = $this->getParameters();
+            $parameters->setPage((int) (ceil($offset / $length) + 1));
+            $parameters->setMaxResults((int) $length);
+            $this->setParameters($parameters);
+        } catch (InvalidArgumentException $e) {
+            throw new RequestException('Could not set pagination parameters.');
+        }
 
         return $this;
     }

@@ -17,15 +17,13 @@ namespace spec\Superdesk\ContentApiSdk\Client;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\API\Response;
-use Superdesk\ContentApiSdk\API\Authentication\AuthenticationInterface;
 use Superdesk\ContentApiSdk\API\Authentication\OAuthPasswordAuthentication;
+use Superdesk\ContentApiSdk\Client\AbstractApiClient;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Exception\AccessDeniedException;
 
-class CurlApiClientSpec extends ObjectBehavior
+class DefaultApiClientSpec extends ObjectBehavior
 {
-    // TODO: Check if we can make OAuthPasswordAUthentication more generic, e.g. user interface or parent class
     function let(
         ClientInterface $client,
         OAuthPasswordAuthentication $authentication,
@@ -48,13 +46,12 @@ class CurlApiClientSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('\Superdesk\ContentApiSdk\Client\CurlApiClient');
+        $this->shouldHaveType('\Superdesk\ContentApiSdk\Client\DefaultApiClient');
         $this->shouldImplement('\Superdesk\ContentApiSdk\Client\ApiClientInterface');
     }
 
     function it_should_return_a_response($client, $authentication, $request)
     {
-        $authentication->getAccessToken()->shouldBeCalled();
         $client->makeCall(
             $request->getWrappedObject()->getFullUrl(),
             $request->getWrappedObject()->getHeaders(),
@@ -65,7 +62,6 @@ class CurlApiClientSpec extends ObjectBehavior
 
     function it_should_throw_an_exception_when_the_response_is_invalid($client, $authentication, $request)
     {
-        $authentication->getAccessToken()->shouldBeCalled();
         $client->makeCall(
             $request->getWrappedObject()->getFullUrl(),
             $request->getWrappedObject()->getHeaders(),
@@ -74,27 +70,48 @@ class CurlApiClientSpec extends ObjectBehavior
         $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\ClientException')->duringMakeApiCall($request);
     }
 
-    function it_should_throw_an_exception_after_failing_several_times_to_get_an_access_token($authentication, $request)
+    function it_should_try_to_get_an_access_token_when_none_is_set($client, $authentication, $request)
     {
-        $authentication->getAccessToken()->shouldBeCalled()->willReturn(null);
-        $authentication->getAuthenticationTokens()->shouldBeCalled()->willReturn(true);
-        $this->shouldThrow(new AccessDeniedException('Authentication retry limit reached.'))->duringMakeApiCall($request);
+        $authentication->getAccessToken()->shouldBeCalled()->willReturn(null, 'some_access_token');
+        $authentication->getAuthenticationTokens()->shouldBeCalled();
+        $client->makeCall(
+            $request->getWrappedObject()->getFullUrl(),
+            $request->getWrappedObject()->getHeaders(),
+            array()
+        )->shouldBeCalled()->willReturn(array('headers' => array(), 'status' => 200, 'body' => '{"pubstatus": "usable", "_links": {"parent": {"href": "/", "title": "home"}, "collection": {"href": "items", "title": "items"}, "self": {"href": "items/tag:example.com,0001:newsml_BRE9A607", "title": "Item"}}, "body_text": "Andromeda and Milky Way will collide in about 2 billion years", "type": "text", "language": "en", "versioncreated": "2015-03-09T16:32:23+0000", "uri": "http://api.master.dev.superdesk.org/items/tag%3Aexample.com%2C0001%3Anewsml_BRE9A607", "version": "2", "headline": "Andromeda on a collision course"}'));
+        $this->makeApiCall($request);
     }
 
-    function it_should_refresh_a_token_when_access_token_is_set_but_a_401_is_returned($client, $authentication, $request)
+    function it_should_return_a_response_if_a_subsequent_request_succeeded($client, $authentication, $request)
     {
-        $authentication->getAccessToken()->shouldBeCalled()->willReturn('some_access_token');
-        $authentication->refreshAccessToken()->shouldBeCalled()->willReturn(true);
+        $authentication->getAuthenticationTokens()->willReturn(true);
+        $client->makeCall(
+            $request->getWrappedObject()->getFullUrl(),
+            $request->getWrappedObject()->getHeaders(),
+            array()
+        )->shouldBeCalled()->willReturn(
+            array('status' => 401),
+            array('status' => 401),
+            array('headers' => array(), 'status' => 200, 'body' => '{"pubstatus": "usable", "_links": {"parent": {"href": "/", "title": "home"}, "collection": {"href": "items", "title": "items"}, "self": {"href": "items/tag:example.com,0001:newsml_BRE9A607", "title": "Item"}}, "body_text": "Andromeda and Milky Way will collide in about 2 billion years", "type": "text", "language": "en", "versioncreated": "2015-03-09T16:32:23+0000", "uri": "http://api.master.dev.superdesk.org/items/tag%3Aexample.com%2C0001%3Anewsml_BRE9A607", "version": "2", "headline": "Andromeda on a collision course"}')
+        );
+
+        $this->makeApiCall($request)->shouldHaveType('\Superdesk\ContentApiSdk\API\Response');
+    }
+
+    function it_should_throw_an_exception_after_failing_several_times_to_make_a_successful_request($client, $authentication, $request)
+    {
+        $authentication->getAuthenticationTokens()->willReturn(true);
         $client->makeCall(
             $request->getWrappedObject()->getFullUrl(),
             $request->getWrappedObject()->getHeaders(),
             array()
         )->shouldBeCalled()->willReturn(array('status' => 401));
 
-        $this->shouldThrow('\Superdesk\ContentApiSdk\Exception\AccessDeniedException')->duringMakeApiCall($request);
+        $this->shouldThrow(new AccessDeniedException('Authentication retry limit reached.'))->duringMakeApiCall($request);
+        $this->getAuthenticationRetryAttempt()->shouldBe((AbstractApiClient::MAX_RETRY_LIMIT + 1));
     }
 
-    function it_should_throw_an_when_an_non_200_status_is_returned($client, $authentication, $request)
+    function it_should_throw_an_exception_when_an_non_200_status_is_returned($client, $authentication, $request)
     {
         $authentication->getAccessToken()->shouldBeCalled();
 

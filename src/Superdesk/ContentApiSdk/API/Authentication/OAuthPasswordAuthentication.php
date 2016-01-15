@@ -94,47 +94,38 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
      */
     public function refreshAccessToken()
     {
-        try {
-            $response = $this->client->makeCall(
-                $this->getAuthenticationUrl(),
-                array(),
-                array(),
-                'POST',
-                array(
-                    'client_id' => $this->getClientId(),
-                    'grant_type' => self::REFRESH_GRANT_TYPE,
-                    'username' => $this->getUsername(),
-                    'refresh_token' => $this->refreshToken
-                )
-            );
-        } catch (ClientException $e) {
-            throw new AuthenticationException('Could not refresh access token.', $e->getCode(), $e);
-        }
-
-        if ($response['status'] === 200) {
-            try {
-                $responseObj = ContentApiSdk::getValidJsonObj($response['body']);
-            } catch (InvalidDataException $e) {
-                throw new AuthenticationException('Authentication response body is not (valid) json.', $e->getCode(), $e);
-            }
-
-            if (property_exists($responseObj, 'access_token') && property_exists($responseObj, 'refresh_token')) {
-                $this->accessToken = $responseObj->access_token;
-                $this->refreshToken = $responseObj->refresh_token;
-
-                return true;
-            }
-
-            throw new AuthenticationException('The server returned an unexpected response body.');
-        }
-
-        throw new AuthenticationException('The server returned an unexpected response body.');
-    }
+        return $this->makeTokenCall(array(
+            'client_id' => $this->getClientId(),
+            'grant_type' => self::REFRESH_GRANT_TYPE,
+            'username' => $this->getUsername(),
+            'refresh_token' => $this->refreshToken
+        ));
+   }
 
     /**
      * {@inheritdoc}
      */
     public function getAuthenticationTokens()
+    {
+        return $this->makeTokenCall(array(
+            'client_id' => $this->getClientId(),
+            'grant_type' => self::AUTHENTICATION_GRANT_TYPE,
+            'username' => $this->getUsername(),
+            'password' => $this->getPassword()
+        ));
+    }
+
+    /**
+     * Makes an authentication call to the server.
+     *
+     * @param  array $parameters Array with parameters for the request
+     *
+     * @return boolean
+     *
+     * @throws AuthenticationException Thrown on failures during request and
+     *                                 invalid responses.
+     */
+    private function makeTokenCall(array $parameters)
     {
         try {
             $response = $this->client->makeCall(
@@ -142,12 +133,7 @@ class OAuthPasswordAuthentication extends AbstractAuthentication
                 array(),
                 array(),
                 'POST',
-                array(
-                    'client_id' => $this->getClientId(),
-                    'grant_type' => self::AUTHENTICATION_GRANT_TYPE,
-                    'username' => $this->getUsername(),
-                    'password' => $this->getPassword()
-                )
+                $parameters
             );
         } catch (ClientException $e) {
             throw new AuthenticationException('Could not request access token.', $e->getCode(), $e);

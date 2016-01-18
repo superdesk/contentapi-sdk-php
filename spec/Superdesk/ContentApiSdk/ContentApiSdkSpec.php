@@ -18,9 +18,9 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Superdesk\ContentApiSdk\Client\ApiClientInterface;
 use Superdesk\ContentApiSdk\ContentApiSdk;
-use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\API\Request\RequestParameters;
-use Superdesk\ContentApiSdk\API\Response;
+use Superdesk\ContentApiSdk\Api\Request;
+use Superdesk\ContentApiSdk\Api\Request\RequestParameters;
+use Superdesk\ContentApiSdk\Api\Response;
 
 class ContentApiSdkSpec extends ObjectBehavior
 {
@@ -74,7 +74,7 @@ class ContentApiSdkSpec extends ObjectBehavior
         $parameters->setStartDate('1970-01-01');
         $request = $this->getNewRequest(ContentApiSdk::SUPERDESK_ENDPOINT_ITEMS, $parameters);
         $client->makeApiCall($request)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "items", "href": "items?start_date=2015-08-01" } }, "_items": [], "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
-        $this->getItems($parameters)->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection');
+        $this->getItems($parameters)->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\Api\Pagerfanta\ResourceCollection');
     }
 
     function its_method_get_package_should_return_a_package(ApiClientInterface $client, Request $request)
@@ -90,7 +90,7 @@ class ContentApiSdkSpec extends ObjectBehavior
         $parameters->setStartDate('1970-01-01');
         $request = $this->getNewRequest(ContentApiSdk::SUPERDESK_ENDPOINT_PACKAGES, $parameters);
         $client->makeApiCall($request)->willReturn('{ "_links": { "parent": { "title": "home", "href": "/" }, "self": { "title": "items", "href": "items?start_date=2015-08-01" } }, "_items": [], "_meta": { "page": 1, "total": 0, "max_results": 25 } }');
-        $this->getPackages($parameters)->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection');
+        $this->getPackages($parameters)->shouldReturnAnInstanceOf('Superdesk\ContentApiSdk\Api\Pagerfanta\ResourceCollection');
     }
 
     function its_method_get_available_endpoints_should_contain_all_endpoints()

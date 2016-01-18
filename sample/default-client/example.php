@@ -5,8 +5,8 @@ require __DIR__ . '/../../vendor/autoload.php';
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Client\CurlClient;
 use Superdesk\ContentApiSdk\Client\DefaultApiClient;
-use Superdesk\ContentApiSdk\API\Authentication\OAuthPasswordAuthentication;
-use Superdesk\ContentApiSdk\API\Request\RequestParameters;
+use Superdesk\ContentApiSdk\Api\Authentication\OAuthPasswordAuthentication;
+use Superdesk\ContentApiSdk\Api\Request\RequestParameters;
 
 /**
  * Configure Below
@@ -26,7 +26,7 @@ define('API_PASSWORD', '');
 
 $parameters = new RequestParameters();
 $parameters
-    ->setStartDate(date('Y-m-d', strtotime('-7 days')))
+    ->setStartDate(date('Y-m-d', strtotime('-1 year')))
     ->setPage(1)
     ->setMaxResults(1);
 
@@ -44,6 +44,8 @@ $contentApi = new ContentApiSdk($apiClient, API_HOST, API_PORT, API_PROTOCOL);
 echo ".:  Getting items  :.\n\n";
 
 $items = $contentApi->getItems($parameters);
+$items->setMaxPerPage($parameters->getMaxResults());
+$items->setCurrentPage($parameters->getPage());
 
 echo "Total items: {$items->getNbResults()}\n";
 echo "Items per page: {$items->getMaxPerPage()}\n";
@@ -75,10 +77,17 @@ if ($items->haveToPaginate()) {
 }
 
 
-
 echo "\n\n.:  Getting packages  :.\n\n";
 
+// Reset parameters
+$parameters
+    ->setPage(1)
+    ->setMaxResults(1);
+
 $packages = $contentApi->getPackages($parameters, true);
+$packages->setMaxPerPage($parameters->getMaxResults());
+$packages->setCurrentPage($parameters->getPage());
+
 
 echo "Total packages: {$packages->getNbResults()}\n";
 echo "Packages per page: {$packages->getMaxPerPage()}\n";

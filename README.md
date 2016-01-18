@@ -78,7 +78,7 @@ been invalited.
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Client\CurlClient;
 use Superdesk\ContentApiSdk\Client\CurlApiClient;
-use Superdesk\ContentApiSdk\API\Authentication\OAuthPasswordAuthentication;
+use Superdesk\ContentApiSdk\Api\Authentication\OAuthPasswordAuthentication;
 
 $genericClient = new CurlClient();
 $authentication = new OAuthPasswordAuthentication($genericClient);

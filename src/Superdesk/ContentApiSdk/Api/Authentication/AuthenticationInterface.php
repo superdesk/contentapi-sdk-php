@@ -37,6 +37,15 @@ interface AuthenticationInterface
     public function getAccessToken();
 
     /**
+     * Tries to refresh the access token based on the current refresh token.
+     *
+     * @return boolean Returns true on success
+     *
+     * @throws AuthenticationException On connection, response and other errors
+     */
+    public function refreshAccessToken();
+
+    /**
      * Makes a call to the Content API and returns the tokens.
      *
      * @return boolean Returns true on success

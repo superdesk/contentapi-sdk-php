@@ -5,8 +5,8 @@ require __DIR__ . '/../../vendor/autoload.php';
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Client\CurlClient;
 use Superdesk\ContentApiSdk\Client\DefaultApiClient;
-use Superdesk\ContentApiSdk\API\Authentication\OAuthPasswordAuthentication;
-use Superdesk\ContentApiSdk\API\Request\RequestParameters;
+use Superdesk\ContentApiSdk\Api\Authentication\OAuthPasswordAuthentication;
+use Superdesk\ContentApiSdk\Api\Request\RequestParameters;
 
 /**
  * Configure Below

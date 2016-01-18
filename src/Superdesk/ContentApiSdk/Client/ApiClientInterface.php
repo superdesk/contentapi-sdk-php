@@ -14,11 +14,11 @@
 
 namespace Superdesk\ContentApiSdk\Client;
 
-use Superdesk\ContentApiSdk\API\Authentication\AuthenticationInterface;
+use Superdesk\ContentApiSdk\Api\Authentication\AuthenticationInterface;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Exception\ClientException;
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
-use Superdesk\ContentApiSdk\API\Response;
+use Superdesk\ContentApiSdk\Api\Request\RequestInterface;
+use Superdesk\ContentApiSdk\Api\Response;
 
 /**
  * Interface for API specific clients.

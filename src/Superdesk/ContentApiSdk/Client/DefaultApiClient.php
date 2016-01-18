@@ -14,9 +14,9 @@
 
 namespace Superdesk\ContentApiSdk\Client;
 
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
-use Superdesk\ContentApiSdk\API\Request\OAuthDecorator;
-use Superdesk\ContentApiSdk\API\Response;
+use Superdesk\ContentApiSdk\Api\Request\RequestInterface;
+use Superdesk\ContentApiSdk\Api\Request\OAuthDecorator;
+use Superdesk\ContentApiSdk\Api\Response;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Exception\AuthenticationException;
 use Superdesk\ContentApiSdk\Exception\AccessDeniedException;

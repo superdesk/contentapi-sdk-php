@@ -1,6 +1,7 @@
 languages:
-   PHP: true
+    PHP: true
 exclude_paths:
+- "api/*"
 - "spec/*"
 - "vendor/*"
 - "sample/*"

@@ -19,6 +19,7 @@ use Superdesk\ContentApiSdk\API\Request\RequestParameters;
 use Superdesk\ContentApiSdk\API\Response;
 use Superdesk\ContentApiSdk\API\Pagerfanta\ItemAdapter;
 use Superdesk\ContentApiSdk\API\Pagerfanta\PackageAdapter;
+use Superdesk\ContentApiSdk\API\Pagerfanta\ResourceAdapter;
 use Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection;
 use Superdesk\ContentApiSdk\Client\ApiClientInterface;
 use Superdesk\ContentApiSdk\Data\Item;
@@ -250,14 +251,12 @@ class ContentApiSdk
      */
     public function getItems(RequestParameters $paramObj)
     {
-        $itemCollection = new ResourceCollection(
+        return $this->getNewResourceCollection(
             new ItemAdapter(
                 $this->client,
                 $this->getNewRequest(self::SUPERDESK_ENDPOINT_ITEMS, $paramObj)
             )
         );
-
-        return $itemCollection;
     }
 
     /**
@@ -298,7 +297,7 @@ class ContentApiSdk
         RequestParameters $paramObj,
         $resolveAssociations = false
     ) {
-        $packageCollection = new ResourceCollection(
+        return $this->getNewResourceCollection(
             new PackageAdapter(
                 $this->client,
                 $this->getNewRequest(self::SUPERDESK_ENDPOINT_PACKAGES, $paramObj),
@@ -306,8 +305,6 @@ class ContentApiSdk
                 $resolveAssociations
             )
         );
-
-        return $packageCollection;
     }
 
     /**
@@ -387,6 +384,18 @@ class ContentApiSdk
         }
 
         return $request;
+    }
+
+    /**
+     * Shortcut to get a new ResourceCollection object.
+     *
+     * @param  ResourceAdapter $resourceAdapter
+     *
+     * @return ResourceCollection
+     */
+    private function getNewResourceCollection(ResourceAdapter $resourceAdapter)
+    {
+        return new ResourceCollection($resourceAdapter);
     }
 
     /**

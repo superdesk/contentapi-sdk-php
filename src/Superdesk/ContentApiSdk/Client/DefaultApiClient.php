@@ -49,25 +49,24 @@ class DefaultApiClient extends AbstractApiClient
 
         $response = $this->sendRequest($this->authenticateRequest($request));
 
-        if ($response['status'] === 200) {
+        switch ($response['status']) {
+            case 200:
+                $this->resetAuthenticationRetryAttempt();
 
-            $this->resetAuthenticationRetryAttempt();
+                return $this->createResponseObject($response);
+            case 401:
+                $this->incrementAuthenticationRetryAttempt();
 
-            return $this->createResponseObject($response);
-        } elseif ($response['status'] === 401) {
+                if ($this->isAuthenticationRetryLimitReached()) {
+                    throw new AccessDeniedException('Authentication retry limit reached.');
+                }
 
-            $this->incrementAuthenticationRetryAttempt();
+                // Once SD-3820 is fixed, implement SWP-92 branch, it will use
+                // the refresh token functionality, instead of request a new token
+                // each time this method is called.
+                $this->getNewToken($request);
 
-            if ($this->isAuthenticationRetryLimitReached()) {
-                throw new AccessDeniedException('Authentication retry limit reached.');
-            }
-
-            // Once SD-3820 is fixed, implement SWP-92 branch, it will use
-            // the refresh token functionality, instead of request a new token
-            // each time this method is called.
-            $this->getNewToken($request);
-
-            return $this->makeApiCall($request);
+                return $this->makeApiCall($request);
         }
 
         throw new ClientException(sprintf('The server returned an error with status %s.', $response['status']), $response['status']);

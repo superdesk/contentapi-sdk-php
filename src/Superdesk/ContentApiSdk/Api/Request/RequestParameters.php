@@ -12,7 +12,7 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\API\Request;
+namespace Superdesk\ContentApiSdk\Api\Request;
 
 use Superdesk\ContentApiSdk\Exception\InvalidArgumentException;
 use DateTime;

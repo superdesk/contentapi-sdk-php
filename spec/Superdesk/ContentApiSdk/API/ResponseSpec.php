@@ -12,17 +12,17 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\API;
+namespace spec\Superdesk\ContentApiSdk\Api;
 
 use PhpSpec\ObjectBehavior;
 use Superdesk\ContentApiSdk\ContentApiSdk;
-use Superdesk\ContentApiSdk\API\Response;
+use Superdesk\ContentApiSdk\Api\Response;
 
 class ResponseSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\API\Response');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Api\Response');
     }
 
     function let()

@@ -14,13 +14,13 @@
 
 namespace Superdesk\ContentApiSdk;
 
-use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\API\Request\RequestParameters;
-use Superdesk\ContentApiSdk\API\Response;
-use Superdesk\ContentApiSdk\API\Pagerfanta\ItemAdapter;
-use Superdesk\ContentApiSdk\API\Pagerfanta\PackageAdapter;
-use Superdesk\ContentApiSdk\API\Pagerfanta\ResourceAdapter;
-use Superdesk\ContentApiSdk\API\Pagerfanta\ResourceCollection;
+use Superdesk\ContentApiSdk\Api\Request;
+use Superdesk\ContentApiSdk\Api\Request\RequestParameters;
+use Superdesk\ContentApiSdk\Api\Response;
+use Superdesk\ContentApiSdk\Api\Pagerfanta\ItemAdapter;
+use Superdesk\ContentApiSdk\Api\Pagerfanta\PackageAdapter;
+use Superdesk\ContentApiSdk\Api\Pagerfanta\ResourceAdapter;
+use Superdesk\ContentApiSdk\Api\Pagerfanta\ResourceCollection;
 use Superdesk\ContentApiSdk\Client\ApiClientInterface;
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Data\Package;

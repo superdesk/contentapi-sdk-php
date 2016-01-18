@@ -12,10 +12,10 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\API;
+namespace Superdesk\ContentApiSdk\Api;
 
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
-use Superdesk\ContentApiSdk\API\Request\RequestParameters;
+use Superdesk\ContentApiSdk\Api\Request\RequestInterface;
+use Superdesk\ContentApiSdk\Api\Request\RequestParameters;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Exception\ResponseException;
 use Superdesk\ContentApiSdk\Exception\RequestException;

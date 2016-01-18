@@ -12,17 +12,17 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\API\Request;
+namespace spec\Superdesk\ContentApiSdk\Api\Request;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\Api\Request;
 
 class VersionDecoratorSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\API\Request\VersionDecorator');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Api\Request\VersionDecorator');
     }
 
     function let()

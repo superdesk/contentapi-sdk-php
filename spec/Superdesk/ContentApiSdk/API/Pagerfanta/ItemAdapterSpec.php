@@ -12,22 +12,22 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\API\Pagerfanta;
+namespace spec\Superdesk\ContentApiSdk\Api\Pagerfanta;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Superdesk\ContentApiSdk\Client\ApiClientInterface;
-use Superdesk\ContentApiSdk\API\Request\PaginationDecorator;
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
-use Superdesk\ContentApiSdk\API\Request\RequestParameters;
-use Superdesk\ContentApiSdk\API\Response;
+use Superdesk\ContentApiSdk\Api\Request\PaginationDecorator;
+use Superdesk\ContentApiSdk\Api\Request\RequestInterface;
+use Superdesk\ContentApiSdk\Api\Request\RequestParameters;
+use Superdesk\ContentApiSdk\Api\Response;
 use Superdesk\ContentApiSdk\Data\Item;
 
 class ItemAdapterSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\API\Pagerfanta\ItemAdapter');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Api\Pagerfanta\ItemAdapter');
     }
 
     function let(

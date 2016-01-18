@@ -12,9 +12,9 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\API\Pagerfanta;
+namespace Superdesk\ContentApiSdk\Api\Pagerfanta;
 
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
+use Superdesk\ContentApiSdk\Api\Request\RequestInterface;
 use Superdesk\ContentApiSdk\Client\ApiClientInterface;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Data\Package;

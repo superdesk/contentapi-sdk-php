@@ -12,14 +12,14 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\API\Authentication;
+namespace spec\Superdesk\ContentApiSdk\Api\Authentication;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
-use Superdesk\ContentApiSdk\API\Request\PaginationDecorator;
-use Superdesk\ContentApiSdk\API\Response;
+use Superdesk\ContentApiSdk\Api\Request\RequestInterface;
+use Superdesk\ContentApiSdk\Api\Request\PaginationDecorator;
+use Superdesk\ContentApiSdk\Api\Response;
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Exception\AuthenticationException;
 
@@ -27,7 +27,7 @@ class OAuthPasswordAuthenticationSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\API\Authentication\OAuthPasswordAuthentication');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Api\Authentication\OAuthPasswordAuthentication');
     }
 
     function let(ClientInterface $client)

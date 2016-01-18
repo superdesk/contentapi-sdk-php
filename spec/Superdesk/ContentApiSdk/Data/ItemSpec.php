@@ -15,7 +15,7 @@
 namespace spec\Superdesk\ContentApiSdk\Data;
 
 use PhpSpec\ObjectBehavior;
-use Superdesk\ContentApiSdk\API\Response;
+use Superdesk\ContentApiSdk\Api\Response;
 
 class ItemSpec extends ObjectBehavior
 {

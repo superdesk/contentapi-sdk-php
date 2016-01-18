@@ -12,19 +12,19 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\API\Request;
+namespace spec\Superdesk\ContentApiSdk\Api\Request;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
-use Superdesk\ContentApiSdk\API\Request\RequestParameters;
+use Superdesk\ContentApiSdk\Api\Request;
+use Superdesk\ContentApiSdk\Api\Request\RequestInterface;
+use Superdesk\ContentApiSdk\Api\Request\RequestParameters;
 
 class RequestDecoratorSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\API\Request\RequestDecorator');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Api\Request\RequestDecorator');
     }
 
     function let()
@@ -63,7 +63,7 @@ class RequestDecoratorSpec extends ObjectBehavior
 
     function it_should_return_the_parameters_of_the_decorated_request()
     {
-        $this->getParameters()->shouldHaveType('\Superdesk\ContentApiSdk\API\Request\RequestParameters');
+        $this->getParameters()->shouldHaveType('\Superdesk\ContentApiSdk\Api\Request\RequestParameters');
     }
 
     function it_should_return_the_headers_of_the_decorated_request()

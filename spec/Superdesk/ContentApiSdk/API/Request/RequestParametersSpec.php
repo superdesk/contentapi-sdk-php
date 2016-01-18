@@ -12,18 +12,18 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\API\Request;
+namespace spec\Superdesk\ContentApiSdk\Api\Request;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\API\Request\RequestParameters;
+use Superdesk\ContentApiSdk\Api\Request\RequestParameters;
 use DateTime;
 
 class RequestParametersSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\API\Request\RequestParameters');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Api\Request\RequestParameters');
     }
 
     function it_should_set_and_get_a_start_date()

@@ -12,7 +12,7 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\API\Authentication;
+namespace Superdesk\ContentApiSdk\Api\Authentication;
 
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 

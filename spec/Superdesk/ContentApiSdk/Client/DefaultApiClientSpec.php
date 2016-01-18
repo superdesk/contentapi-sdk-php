@@ -16,8 +16,8 @@ namespace spec\Superdesk\ContentApiSdk\Client;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\API\Request;
-use Superdesk\ContentApiSdk\API\Authentication\OAuthPasswordAuthentication;
+use Superdesk\ContentApiSdk\Api\Request;
+use Superdesk\ContentApiSdk\Api\Authentication\OAuthPasswordAuthentication;
 use Superdesk\ContentApiSdk\Client\AbstractApiClient;
 use Superdesk\ContentApiSdk\Client\ClientInterface;
 use Superdesk\ContentApiSdk\Exception\AccessDeniedException;
@@ -57,7 +57,7 @@ class DefaultApiClientSpec extends ObjectBehavior
             $request->getWrappedObject()->getHeaders(),
             array()
         )->shouldBeCalled()->willReturn(array('headers' => array(), 'status' => 200, 'body' => '{"pubstatus": "usable", "_links": {"parent": {"href": "/", "title": "home"}, "collection": {"href": "items", "title": "items"}, "self": {"href": "items/tag:example.com,0001:newsml_BRE9A607", "title": "Item"}}, "body_text": "Andromeda and Milky Way will collide in about 2 billion years", "type": "text", "language": "en", "versioncreated": "2015-03-09T16:32:23+0000", "uri": "http://api.master.dev.superdesk.org/items/tag%3Aexample.com%2C0001%3Anewsml_BRE9A607", "version": "2", "headline": "Andromeda on a collision course"}'));
-        $this->makeApiCall($request)->shouldHaveType('\Superdesk\ContentApiSdk\API\Response');
+        $this->makeApiCall($request)->shouldHaveType('\Superdesk\ContentApiSdk\Api\Response');
     }
 
     function it_should_throw_an_exception_when_the_response_is_invalid($client, $authentication, $request)
@@ -95,7 +95,7 @@ class DefaultApiClientSpec extends ObjectBehavior
             array('headers' => array(), 'status' => 200, 'body' => '{"pubstatus": "usable", "_links": {"parent": {"href": "/", "title": "home"}, "collection": {"href": "items", "title": "items"}, "self": {"href": "items/tag:example.com,0001:newsml_BRE9A607", "title": "Item"}}, "body_text": "Andromeda and Milky Way will collide in about 2 billion years", "type": "text", "language": "en", "versioncreated": "2015-03-09T16:32:23+0000", "uri": "http://api.master.dev.superdesk.org/items/tag%3Aexample.com%2C0001%3Anewsml_BRE9A607", "version": "2", "headline": "Andromeda on a collision course"}')
         );
 
-        $this->makeApiCall($request)->shouldHaveType('\Superdesk\ContentApiSdk\API\Response');
+        $this->makeApiCall($request)->shouldHaveType('\Superdesk\ContentApiSdk\Api\Response');
     }
 
     function it_should_throw_an_exception_after_failing_several_times_to_make_a_successful_request($client, $authentication, $request)

@@ -12,7 +12,7 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\API;
+namespace Superdesk\ContentApiSdk\Api;
 
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Exception\ResponseException;

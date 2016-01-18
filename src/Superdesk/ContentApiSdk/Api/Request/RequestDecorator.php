@@ -12,9 +12,9 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\API\Request;
+namespace Superdesk\ContentApiSdk\Api\Request;
 
-use Superdesk\ContentApiSdk\API\Request\RequestParameters;
+use Superdesk\ContentApiSdk\Api\Request\RequestParameters;
 
 /**
  * Base decorator class for API Requests.

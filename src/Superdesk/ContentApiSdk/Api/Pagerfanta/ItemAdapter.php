@@ -12,7 +12,7 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\API\Pagerfanta;
+namespace Superdesk\ContentApiSdk\Api\Pagerfanta;
 
 use Superdesk\ContentApiSdk\Data\Item;
 use Superdesk\ContentApiSdk\Exception\InvalidDataException;

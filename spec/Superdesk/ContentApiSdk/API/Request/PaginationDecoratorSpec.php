@@ -12,17 +12,17 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\API\Request;
+namespace spec\Superdesk\ContentApiSdk\Api\Request;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Superdesk\ContentApiSdk\API\Request;
+use Superdesk\ContentApiSdk\Api\Request;
 
 class PaginationDecoratorSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\API\Request\PaginationDecorator');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Api\Request\PaginationDecorator');
     }
 
     function let()
@@ -34,7 +34,7 @@ class PaginationDecoratorSpec extends ObjectBehavior
     {
         $this->addPagination(5, 10);
         $parameters = $this->getParameters();
-        $parameters->shouldHaveType('\Superdesk\ContentApiSdk\API\Request\RequestParameters');
+        $parameters->shouldHaveType('\Superdesk\ContentApiSdk\Api\Request\RequestParameters');
         $parameters->getMaxResults()->shouldBe(10);
     }
 
@@ -42,13 +42,13 @@ class PaginationDecoratorSpec extends ObjectBehavior
     {
         $this->addPagination(0, 10);
         $parameters = $this->getParameters();
-        $parameters->shouldHaveType('\Superdesk\ContentApiSdk\API\Request\RequestParameters');
+        $parameters->shouldHaveType('\Superdesk\ContentApiSdk\Api\Request\RequestParameters');
         $parameters->getPage()->shouldBe(1);
         $parameters->getMaxResults()->shouldBe(10);
 
         $this->addPagination(10, 10);
         $parameters = $this->getParameters();
-        $parameters->shouldHaveType('\Superdesk\ContentApiSdk\API\Request\RequestParameters');
+        $parameters->shouldHaveType('\Superdesk\ContentApiSdk\Api\Request\RequestParameters');
         $parameters->getPage()->shouldBe(2);
         $parameters->getMaxResults()->shouldBe(10);
     }

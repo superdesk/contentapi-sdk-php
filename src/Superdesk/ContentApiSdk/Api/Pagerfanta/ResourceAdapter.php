@@ -12,11 +12,11 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\API\Pagerfanta;
+namespace Superdesk\ContentApiSdk\Api\Pagerfanta;
 
 use Pagerfanta\Adapter\AdapterInterface;
-use Superdesk\ContentApiSdk\API\Request\PaginationDecorator;
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
+use Superdesk\ContentApiSdk\Api\Request\PaginationDecorator;
+use Superdesk\ContentApiSdk\Api\Request\RequestInterface;
 use Superdesk\ContentApiSdk\Client\ApiClientInterface;
 
 /**
@@ -53,7 +53,7 @@ class ResourceAdapter implements AdapterInterface
     /**
      * Make HTTP call.
      *
-     * @return \Superdesk\ContentApiSdk\API\Response API Response object
+     * @return \Superdesk\ContentApiSdk\Api\Response API Response object
      */
     private function doCall(RequestInterface $request)
     {

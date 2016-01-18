@@ -12,9 +12,9 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace Superdesk\ContentApiSdk\API\Authentication;
+namespace Superdesk\ContentApiSdk\Api\Authentication;
 
-use Superdesk\ContentApiSdk\API\Request\RequestInterface;
+use Superdesk\ContentApiSdk\Api\Request\RequestInterface;
 use Superdesk\ContentApiSdk\ContentApiSdk;
 use Superdesk\ContentApiSdk\Exception\AuthenticationException;
 use Superdesk\ContentApiSdk\Exception\ClientException;

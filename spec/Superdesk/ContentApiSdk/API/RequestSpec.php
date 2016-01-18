@@ -12,18 +12,18 @@
  * @license http://www.superdesk.org/license
  */
 
-namespace spec\Superdesk\ContentApiSdk\API;
+namespace spec\Superdesk\ContentApiSdk\Api;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Superdesk\ContentApiSdk\ContentApiSdk;
-use Superdesk\ContentApiSdk\API\Request\RequestParameters;
+use Superdesk\ContentApiSdk\Api\Request\RequestParameters;
 
 class RequestSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
-        $this->shouldHaveType('Superdesk\ContentApiSdk\API\Request');
+        $this->shouldHaveType('Superdesk\ContentApiSdk\Api\Request');
     }
 
     function let(RequestParameters $parameters)

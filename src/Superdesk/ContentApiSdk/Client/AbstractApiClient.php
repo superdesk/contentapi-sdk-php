@@ -14,7 +14,7 @@
 
 namespace Superdesk\ContentApiSdk\Client;
 
-use Superdesk\ContentApiSdk\API\Authentication\AuthenticationInterface;
+use Superdesk\ContentApiSdk\Api\Authentication\AuthenticationInterface;
 
 /**
  * Abstract for api clients.
